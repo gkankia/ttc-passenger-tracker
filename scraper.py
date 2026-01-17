@@ -4,11 +4,11 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
 from datetime import datetime
 import csv
 import os
 import time
+import sys
 
 URL = "https://ttc.com.ge"
 DATA_FOLDER = "data"
@@ -90,17 +90,30 @@ def main():
 
     # Setup Chrome options
     chrome_options = Options()
-    chrome_options.add_argument("--headless")  # Run in background
+    chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--window-size=1920,1080")
+    chrome_options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
 
     # Initialize the driver
+    driver = None
     try:
-        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+        # Check if running in GitHub Actions
+        if os.getenv('GITHUB_ACTIONS'):
+            # Use system chromium-chromedriver
+            service = Service('/usr/bin/chromedriver')
+            chrome_options.binary_location = '/usr/bin/chromium-browser'
+            driver = webdriver.Chrome(service=service, options=chrome_options)
+        else:
+            # Use webdriver-manager for local development
+            from webdriver_manager.chrome import ChromeDriverManager
+            driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+        
         driver.get(URL)
         
-        # Wait for the page to load (wait for traffic numbers to appear)
+        # Wait for the page to load
         wait = WebDriverWait(driver, 20)
         wait.until(EC.presence_of_element_located((By.CLASS_NAME, "ttc-trafic-num")))
         
@@ -192,8 +205,11 @@ def main():
         
     except Exception as e:
         print(f"Error: {e}")
-        if 'driver' in locals():
+        import traceback
+        traceback.print_exc()
+        if driver:
             driver.quit()
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
