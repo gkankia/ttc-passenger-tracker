@@ -69,6 +69,33 @@
             height: 400px;
         }
 
+        .chart-legend {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            padding: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .chart-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+        }
+
+        .chart-legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+        }
+
         .insights-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -184,25 +211,7 @@
         }
 
         .legend {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #e5e7eb;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
+            display: none;
         }
 
         .loading {
@@ -473,6 +482,24 @@
             const html = `
                 <div class="main-content">
                     <div class="chart-container">
+                        <div class="chart-legend">
+                            <div class="chart-legend-item">
+                                <div class="chart-legend-color" style="background: #3b82f6;"></div>
+                                <span>Bus</span>
+                            </div>
+                            <div class="chart-legend-item">
+                                <div class="chart-legend-color" style="background: #10b981;"></div>
+                                <span>Metro</span>
+                            </div>
+                            <div class="chart-legend-item">
+                                <div class="chart-legend-color" style="background: #f59e0b;"></div>
+                                <span>Minibus</span>
+                            </div>
+                            <div class="chart-legend-item">
+                                <div class="chart-legend-color" style="background: #8b5cf6;"></div>
+                                <span>Cable</span>
+                            </div>
+                        </div>
                         <canvas id="passengerChart"></canvas>
                     </div>
 
@@ -491,25 +518,6 @@
                                 </iframe>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                <div class="legend">
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #3b82f6;"></div>
-                        <span>Bus</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #10b981;"></div>
-                        <span>Metro</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #f59e0b;"></div>
-                        <span>Minibus</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: #8b5cf6;"></div>
-                        <span>Cable</span>
                     </div>
                 </div>
             `;
