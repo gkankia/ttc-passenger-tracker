@@ -221,12 +221,10 @@
         }
 
         .footer {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #e5e7eb;
-            color: #666;
-            font-size: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
         }
 
         .footer-content {
@@ -237,10 +235,15 @@
             flex-wrap: wrap;
         }
 
-        .footer-logo {
-            height: 24px;
-            width: auto;
-            vertical-align: middle;
+        .footer-logo-wrapper {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .footer-logo-img {
+            width: 80px; /* adjust as needed */
+            height: auto;
         }
 
         .footer a {
@@ -558,11 +561,17 @@
                 </div>
 
                 <div class="footer">
-                    Data Source: <a href="https://ttc.com.ge" target="_blank" rel="noopener">TTC (Tbilisi Transport Company)</a>
-                    <span class="footer-divider">|</span>
-                    Created by <a href="https://gkankia.xyz" target="_blank" rel="noopener">Giorgi Kankia</a>
-                    <img src="img/black-logo.png" alt=""
-                    width="10%">
+                    <div class="footer-content">
+                        Data Source:
+                        <a href="https://ttc.com.ge" target="_blank" rel="noopener">TTC (Tbilisi Transport Company)</a>
+                        <span class="footer-divider">|</span>
+                        Created by
+                        <a href="https://gkankia.xyz" target="_blank" rel="noopener">Giorgi Kankia</a>
+                    </div>
+
+                    <div class="footer-logo-wrapper">
+                        <img src="img/black-logo.png" alt="Logo" class="footer-logo-img">
+                    </div>
                 </div>
             `;
 
