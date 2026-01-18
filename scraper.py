@@ -5,14 +5,14 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from datetime import datetime
-import csv
+import json
 import os
 import time
 import sys
 
 URL = "https://ttc.com.ge"
 DATA_FOLDER = "data"
-DATA_FILE = os.path.join(DATA_FOLDER, "ttc_passengers.csv")
+DATA_FILE = os.path.join(DATA_FOLDER, "ttc_passengers.json")
 
 # Georgian month names to numbers (for fallback)
 GEORGIAN_MONTHS = {
@@ -64,29 +64,27 @@ def format_date(date_obj):
     """Format datetime object as DD.MM.YYYY."""
     return date_obj.strftime("%d.%m.%Y")
 
-def ensure_csv():
-    """Create data folder and CSV with header if it doesn't exist."""
+def load_data():
+    """Load existing JSON data or return empty list."""
     os.makedirs(DATA_FOLDER, exist_ok=True)
-    if not os.path.exists(DATA_FILE):
-        with open(DATA_FILE, "w", newline="", encoding="utf-8") as f:
-            writer = csv.writer(f)
-            writer.writerow(["date", "weekday", "bus", "metro", "minibus", "cable"])
-        print(f"Created new CSV file at {DATA_FILE}")
-
-def date_exists(date_str):
-    """Check if date already exists in CSV."""
-    if not os.path.exists(DATA_FILE):
-        return False
     
-    with open(DATA_FILE, "r", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            if row["date"] == date_str:
-                return True
-    return False
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
+
+def save_data(data):
+    """Save data to JSON file."""
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+def date_exists(data, date_str):
+    """Check if date already exists in data."""
+    return any(entry["date"] == date_str for entry in data)
 
 def main():
-    ensure_csv()
+    # Load existing data
+    all_data = load_data()
 
     # Setup Chrome options
     chrome_options = Options()
@@ -149,7 +147,7 @@ def main():
                 return
         
         # Check for duplicates
-        if date_exists(formatted_date):
+        if date_exists(all_data, formatted_date):
             print(f"Data for {formatted_date} already exists. Skipping.")
             driver.quit()
             return
@@ -158,7 +156,7 @@ def main():
         traffic_items = driver.find_elements(By.CLASS_NAME, "ttc-trafic-item")
         print(f"Found {len(traffic_items)} traffic items")
         
-        data = {}
+        transport_data = {}
         for item in traffic_items:
             try:
                 # Get the transport mode from classes
@@ -170,38 +168,37 @@ def main():
                 num_text = num_element.text.strip().replace(',', '').replace(' ', '')
                 
                 if num_text.isdigit() and int(num_text) > 0:
-                    data[mode] = int(num_text)
+                    transport_data[mode] = int(num_text)
                 else:
-                    data[mode] = None
+                    transport_data[mode] = None
                 
-                print(f"  {mode}: {data.get(mode)}")
+                print(f"  {mode}: {transport_data.get(mode)}")
             except Exception as e:
                 print(f"Error extracting data from item: {e}")
         
         driver.quit()
         
         # Check if we got any valid data
-        if not any(data.values()):
+        if not any(transport_data.values()):
             print("Warning: All values are 0 or None. Page might not have loaded properly.")
             return
         
-        # Append to CSV
-        try:
-            with open(DATA_FILE, "a", newline="", encoding="utf-8") as f:
-                writer = csv.writer(f)
-                writer.writerow([
-                    formatted_date,
-                    weekday,
-                    data.get("bus"),
-                    data.get("metro"),
-                    data.get("minibus"),
-                    data.get("cable")
-                ])
-        except Exception as e:
-            print(f"Error writing to CSV: {e}")
-            return
+        # Create new entry
+        new_entry = {
+            "date": formatted_date,
+            "weekday": weekday,
+            "bus": transport_data.get("bus"),
+            "metro": transport_data.get("metro"),
+            "minibus": transport_data.get("minibus"),
+            "cable": transport_data.get("cable")
+        }
         
-        print("\nSaved:", {"date": formatted_date, "weekday": weekday, **data})
+        # Add to data and save
+        all_data.append(new_entry)
+        save_data(all_data)
+        
+        print(f"\nSaved: {new_entry}")
+        print(f"Total records: {len(all_data)}")
         
     except Exception as e:
         print(f"Error: {e}")
