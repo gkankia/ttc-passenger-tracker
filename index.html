@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTC Passenger Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .dashboard {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-bottom: 30px;
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .insight-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .insight-card h3 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .insight-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .insight-change {
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .change-positive {
+            color: #10b981;
+        }
+
+        .change-negative {
+            color: #ef4444;
+        }
+
+        .change-neutral {
+            color: #6b7280;
+        }
+
+        .comparison-section {
+            background: #f9fafb;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .comparison-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .comparison-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid;
+        }
+
+        .comparison-item.bus { border-color: #3b82f6; }
+        .comparison-item.metro { border-color: #10b981; }
+        .comparison-item.minibus { border-color: #f59e0b; }
+        .comparison-item.cable { border-color: #8b5cf6; }
+
+        .comparison-item h4 {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .comparison-value {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.3);
+                opacity: 0.7;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .dashboard {
+                padding: 20px;
+            }
+
+            .chart-container {
+                height: 300px;
+            }
+
+            .insights-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚇 TTC Passenger Analytics</h1>
+            <p class="subtitle">Tbilisi Transport Company Daily Insights</p>
+        </header>
+
+        <div class="dashboard" id="dashboard">
+            <div class="loading">Loading data...</div>
+        </div>
+    </div>
+
+    <script>
+        // Georgian public holidays 2026
+        const georgianHolidays = [
+            '01.01.2026', '02.01.2026', '07.01.2026', '19.01.2026',
+            '03.03.2026', '08.03.2026', '18.04.2026', '19.04.2026',
+            '20.04.2026', '21.04.2026', '09.05.2026', '12.05.2026',
+            '26.05.2026', '28.08.2026', '14.10.2026', '23.11.2026'
+        ];
+
+        async function loadData() {
+            try {
+                const response = await fetch('data/ttc_passengers.json');
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error loading data:', error);
+                return [];
+            }
+        }
+
+        function parseDate(dateStr) {
+            const [day, month, year] = dateStr.split('.');
+            return new Date(year, month - 1, day);
+        }
+
+        function formatDate(dateStr) {
+            const date = parseDate(dateStr);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        function isHoliday(dateStr) {
+            return georgianHolidays.includes(dateStr);
+        }
+
+        function calculateChange(current, previous) {
+            if (!previous || previous === 0) return null;
+            return ((current - previous) / previous * 100).toFixed(1);
+        }
+
+        function getChangeClass(change) {
+            if (change > 0) return 'change-positive';
+            if (change < 0) return 'change-negative';
+            return 'change-neutral';
+        }
+
+        function getChangeSymbol(change) {
+            if (change > 0) return '↑';
+            if (change < 0) return '↓';
+            return '→';
+        }
+
+        function createChart(data) {
+            const ctx = document.getElementById('passengerChart').getContext('2d');
+            
+            const labels = data.map(d => formatDate(d.date));
+            const currentDate = data[data.length - 1].date;
+
+            const datasets = [
+                {
+                    label: 'Bus',
+                    data: data.map(d => d.bus),
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    pointBackgroundColor: data.map(d => d.date === currentDate ? '#ef4444' : '#3b82f6'),
+                    pointRadius: data.map(d => d.date === currentDate ? 8 : 4),
+                    pointHoverRadius: 8,
+                    tension: 0.4
+                },
+                {
+                    label: 'Metro',
+                    data: data.map(d => d.metro),
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    pointBackgroundColor: data.map(d => d.date === currentDate ? '#ef4444' : '#10b981'),
+                    pointRadius: data.map(d => d.date === currentDate ? 8 : 4),
+                    pointHoverRadius: 8,
+                    tension: 0.4
+                },
+                {
+                    label: 'Minibus',
+                    data: data.map(d => d.minibus),
+                    borderColor: '#f59e0b',
+                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                    pointBackgroundColor: data.map(d => d.date === currentDate ? '#ef4444' : '#f59e0b'),
+                    pointRadius: data.map(d => d.date === currentDate ? 8 : 4),
+                    pointHoverRadius: 8,
+                    tension: 0.4
+                },
+                {
+                    label: 'Cable',
+                    data: data.map(d => d.cable),
+                    borderColor: '#8b5cf6',
+                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                    pointBackgroundColor: data.map(d => d.date === currentDate ? '#ef4444' : '#8b5cf6'),
+                    pointRadius: data.map(d => d.date === currentDate ? 8 : 4),
+                    pointHoverRadius: 8,
+                    tension: 0.4
+                }
+            ];
+
+            new Chart(ctx, {
+                type: 'line',
+                data: { labels, datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            titleFont: { size: 14 },
+                            bodyFont: { size: 13 },
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + 
+                                           context.parsed.y.toLocaleString() + ' passengers';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return (value / 1000).toFixed(0) + 'k';
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createInsights(data) {
+            if (data.length < 2) return '<p>Not enough data for insights</p>';
+
+            const latest = data[data.length - 1];
+            const previous = data[data.length - 2];
+
+            const totalLatest = (latest.bus || 0) + (latest.metro || 0) + 
+                               (latest.minibus || 0) + (latest.cable || 0);
+            const totalPrevious = (previous.bus || 0) + (previous.metro || 0) + 
+                                 (previous.minibus || 0) + (previous.cable || 0);
+            const totalChange = calculateChange(totalLatest, totalPrevious);
+
+            const modes = ['bus', 'metro', 'minibus', 'cable'];
+            const cards = modes.map(mode => {
+                const change = calculateChange(latest[mode], previous[mode]);
+                const changeClass = getChangeClass(change);
+                const changeSymbol = getChangeSymbol(change);
+
+                return `
+                    <div class="insight-card">
+                        <h3>${mode.charAt(0).toUpperCase() + mode.slice(1)}</h3>
+                        <div class="insight-value">${(latest[mode] || 0).toLocaleString()}</div>
+                        <div class="insight-change ${changeClass}">
+                            ${changeSymbol} ${Math.abs(change)}% vs yesterday
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            return `
+                <div class="insight-card" style="grid-column: 1 / -1; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h3 style="color: rgba(255,255,255,0.9);">TOTAL PASSENGERS</h3>
+                    <div class="insight-value" style="color: white;">${totalLatest.toLocaleString()}</div>
+                    <div class="insight-change" style="color: rgba(255,255,255,0.9);">
+                        ${getChangeSymbol(totalChange)} ${Math.abs(totalChange)}% vs yesterday
+                        ${isHoliday(latest.date) ? '🎉 Public Holiday' : ''}
+                    </div>
+                </div>
+                ${cards}
+            `;
+        }
+
+        function createComparison(data) {
+            const weekdays = data.filter(d => !['Saturday', 'Sunday'].includes(d.weekday) && !isHoliday(d.date));
+            const weekends = data.filter(d => ['Saturday', 'Sunday'].includes(d.weekday) || isHoliday(d.date));
+
+            if (weekdays.length === 0 || weekends.length === 0) {
+                return '<p>Not enough data for weekday/weekend comparison</p>';
+            }
+
+            const modes = ['bus', 'metro', 'minibus', 'cable'];
+            const modeNames = { bus: 'Bus', metro: 'Metro', minibus: 'Minibus', cable: 'Cable' };
+            
+            const comparisons = modes.map(mode => {
+                const weekdayAvg = weekdays.reduce((sum, d) => sum + (d[mode] || 0), 0) / weekdays.length;
+                const weekendAvg = weekends.reduce((sum, d) => sum + (d[mode] || 0), 0) / weekends.length;
+                const change = calculateChange(weekendAvg, weekdayAvg);
+
+                return `
+                    <div class="comparison-item ${mode}">
+                        <h4>${modeNames[mode]}</h4>
+                        <div class="comparison-value ${getChangeClass(change)}">
+                            ${getChangeSymbol(change)} ${Math.abs(change)}%
+                        </div>
+                        <div style="font-size: 0.8rem; color: #666; margin-top: 5px;">
+                            Weekend vs Weekday
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            return `
+                <h2>📊 Weekday vs Weekend Patterns</h2>
+                <div class="comparison-grid">
+                    ${comparisons}
+                </div>
+                <p style="margin-top: 15px; color: #666; font-size: 0.9rem;">
+                    Based on ${weekdays.length} weekdays and ${weekends.length} weekend/holiday days
+                </p>
+            `;
+        }
+
+        async function initDashboard() {
+            const data = await loadData();
+            
+            if (data.length === 0) {
+                document.getElementById('dashboard').innerHTML = '<p class="loading">No data available</p>';
+                return;
+            }
+
+            // Sort data by date
+            data.sort((a, b) => parseDate(a.date) - parseDate(b.date));
+
+            const html = `
+                <div class="chart-container">
+                    <canvas id="passengerChart"></canvas>
+                </div>
+
+                <div class="insights-grid">
+                    ${createInsights(data)}
+                </div>
+
+                <div class="comparison-section">
+                    ${createComparison(data)}
+                </div>
+
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #3b82f6;"></div>
+                        <span>Bus</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #10b981;"></div>
+                        <span>Metro</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #f59e0b;"></div>
+                        <span>Minibus</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #8b5cf6;"></div>
+                        <span>Cable</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ef4444; animation: pulse 2s infinite;"></div>
+                        <span>Today</span>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('dashboard').innerHTML = html;
+            createChart(data);
+        }
+
+        initDashboard();
+    </script>
+</body>
+</html>

@@ -1,5 +1,13 @@
 [
   {
+    "date": "16.01.2026",
+    "weekday": "Friday",
+    "bus": 508112,
+    "metro": 436336,
+    "minibus": 193786,
+    "cable": 4234
+  },
+  {
     "date": "17.01.2026",
     "weekday": "Saturday",
     "bus": 391070,
