@@ -62,7 +62,7 @@
 
         .insights-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 20px;
         }
 
@@ -133,7 +133,7 @@
 
         .comparison-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 15px;
         }
 
@@ -180,21 +180,6 @@
             width: 20px;
             height: 20px;
             border-radius: 4px;
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-            50% {
-                transform: scale(1.5);
-                opacity: 0.6;
-            }
-        }
-
-        .pulse-point {
-            animation: pulse 2s infinite;
         }
 
         .loading {
@@ -293,7 +278,6 @@
             const ctx = document.getElementById('passengerChart').getContext('2d');
             
             const labels = data.map(d => formatDate(d.date));
-            const currentDate = data[data.length - 1].date;
 
             const datasets = [
                 {
@@ -301,30 +285,18 @@
                     data: data.map(d => d.bus),
                     borderColor: '#3b82f6',
                     backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    pointBackgroundColor: data.map(d => d.date === currentDate ? '#ef4444' : '#3b82f6'),
-                    pointRadius: data.map(d => d.date === currentDate ? 8 : 4),
+                    pointBackgroundColor: '#3b82f6',
+                    pointRadius: 4,
                     pointHoverRadius: 8,
-                    tension: 0.4,
-                    pointStyle: data.map((d, i) => {
-                        if (d.date === currentDate) {
-                            const img = new Image();
-                            img.src = 'data:image/svg+xml;base64,' + btoa(`
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
-                                    <circle cx="8" cy="8" r="6" fill="#ef4444" class="pulse-point"/>
-                                </svg>
-                            `);
-                            return img;
-                        }
-                        return 'circle';
-                    })
+                    tension: 0.4
                 },
                 {
                     label: 'Metro',
                     data: data.map(d => d.metro),
                     borderColor: '#10b981',
                     backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                    pointBackgroundColor: data.map(d => d.date === currentDate ? '#ef4444' : '#10b981'),
-                    pointRadius: data.map(d => d.date === currentDate ? 8 : 4),
+                    pointBackgroundColor: '#10b981',
+                    pointRadius: 4,
                     pointHoverRadius: 8,
                     tension: 0.4
                 },
@@ -333,8 +305,8 @@
                     data: data.map(d => d.minibus),
                     borderColor: '#f59e0b',
                     backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                    pointBackgroundColor: data.map(d => d.date === currentDate ? '#ef4444' : '#f59e0b'),
-                    pointRadius: data.map(d => d.date === currentDate ? 8 : 4),
+                    pointBackgroundColor: '#f59e0b',
+                    pointRadius: 4,
                     pointHoverRadius: 8,
                     tension: 0.4
                 },
@@ -343,15 +315,14 @@
                     data: data.map(d => d.cable),
                     borderColor: '#8b5cf6',
                     backgroundColor: 'rgba(139, 92, 246, 0.1)',
-                    pointBackgroundColor: data.map(d => d.date === currentDate ? '#ef4444' : '#8b5cf6'),
-                    pointRadius: data.map(d => d.date === currentDate ? 8 : 4),
+                    pointBackgroundColor: '#8b5cf6',
+                    pointRadius: 4,
                     pointHoverRadius: 8,
                     tension: 0.4
                 }
             ];
 
-            // Create pulsating animation for current date points
-            const chart = new Chart(ctx, {
+            new Chart(ctx, {
                 type: 'line',
                 data: { labels, datasets },
                 options: {
@@ -395,40 +366,9 @@
                                 display: false
                             }
                         }
-                    },
-                    animation: {
-                        onComplete: function() {
-                            // Animate current date points
-                            const currentIndex = data.findIndex(d => d.date === currentDate);
-                            if (currentIndex !== -1) {
-                                animateCurrentPoints(this, currentIndex);
-                            }
-                        }
                     }
                 }
             });
-
-            function animateCurrentPoints(chart, index) {
-                let scale = 1;
-                let growing = true;
-
-                setInterval(() => {
-                    if (growing) {
-                        scale += 0.05;
-                        if (scale >= 1.5) growing = false;
-                    } else {
-                        scale -= 0.05;
-                        if (scale <= 1) growing = true;
-                    }
-
-                    chart.data.datasets.forEach(dataset => {
-                        dataset.pointRadius = dataset.pointRadius.map((r, i) => 
-                            i === index ? 8 * scale : r
-                        );
-                    });
-                    chart.update('none');
-                }, 50);
-            }
         }
 
         function createInsights(data) {
@@ -558,7 +498,7 @@
                     </div>
                     <div class="legend-item">
                         <div class="legend-color" style="background: #ef4444;"></div>
-                        <span>Current Date</span>
+                        <span>Data Point</span>
                     </div>
                 </div>
             `;
