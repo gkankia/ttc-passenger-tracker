@@ -41,9 +41,9 @@
         }
 
         h3 {
-            font-size: 1.5rem;
-            margin-bottom: 5px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #333;
         }
 
         .subtitle {
@@ -77,25 +77,32 @@
 
         .map-section {
             border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .map-section h3 {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            color: #333;
+            margin-bottom: 15px;
         }
 
         .map-container {
             width: 100%;
-            height: 300px;
-            background: #e5e7eb;
+            flex: 1;
+            min-height: 300px;
             border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #666;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .map-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            border-radius: 10px;
         }
 
         @media (min-width: 1024px) {
@@ -109,10 +116,6 @@
                 min-height: 500px;
             }
 
-            .insights-grid {
-                height: 100%;
-            }
-
             .right-column {
                 display: flex;
                 flex-direction: column;
@@ -120,11 +123,10 @@
             }
 
             .map-section {
-                margin-bottom: 0;
+                flex: 1;
             }
 
             .map-container {
-                height: 100%;
                 min-height: 250px;
             }
         }
@@ -224,6 +226,10 @@
 
             .insights-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .map-container {
+                min-height: 350px;
             }
         }
     </style>
@@ -474,18 +480,16 @@
                         <div class="insights-grid">
                             ${createInsights(data)}
                         </div>
-                        <h3>Transport Network Map</h3>
-                            
-                        <div class="map-container">
-                            <!-- Embed your map here (e.g., Google Maps iframe, Leaflet, Mapbox) -->
-                            <iframe      
-                            src="https://api.mapbox.com/styles/v1/jorjone90/clplq461o00wy01o93mm76il6.html?title=false&access_token=pk.eyJ1Ijoiam9yam9uZTkwIiwiYSI6ImNrZ3R6M2FvdTBwbmwycXBibGRqM2w2enYifQ.BxjvFSGqefuC9yFCrXC-nQ&zoomwheel=false#7.14/41.955/43.795" 
-                            title="Outdoors" style="border:none;">
-                            width="100%" 
-                            height="100%"
-                            style="border:0; border-radius: 10px;" 
-                            loading="lazy">
-                            </iframe>
+
+                        <div class="map-section">
+                            <h3>Transport Network Map</h3>
+                            <div class="map-container">
+                                <iframe      
+                                    src="https://api.mapbox.com/styles/v1/jorjone90/clplq461o00wy01o93mm76il6.html?title=false&access_token=pk.eyJ1Ijoiam9yam9uZTkwIiwiYSI6ImNrZ3R6M2FvdTBwbmwycXBibGRqM2w2enYifQ.BxjvFSGqefuC9yFCrXC-nQ&zoomwheel=false#7.14/41.955/43.795" 
+                                    title="Tbilisi Transport Map" 
+                                    loading="lazy">
+                                </iframe>
+                            </div>
                         </div>
                     </div>
                 </div>
