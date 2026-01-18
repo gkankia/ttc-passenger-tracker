@@ -4,6 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import TimeoutException
 from datetime import datetime
 import json
 import os
@@ -88,12 +89,17 @@ def main():
 
     # Setup Chrome options
     chrome_options = Options()
-    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--headless=new")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--disable-blink-features=AutomationControlled")
     chrome_options.add_argument("--window-size=1920,1080")
     chrome_options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+    
+    # Additional options to avoid detection
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    chrome_options.add_experimental_option('useAutomationExtension', False)
 
     # Initialize the driver
     driver = None
@@ -109,25 +115,43 @@ def main():
             from webdriver_manager.chrome import ChromeDriverManager
             driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
         
+        print(f"Loading URL: {URL}")
         driver.get(URL)
         
-        # Wait for the page to load
-        wait = WebDriverWait(driver, 20)
-        wait.until(EC.presence_of_element_located((By.CLASS_NAME, "ttc-trafic-num")))
+        # Take a screenshot for debugging
+        if os.getenv('GITHUB_ACTIONS'):
+            driver.save_screenshot('/tmp/page_load.png')
+            print("Screenshot saved to /tmp/page_load.png")
+        
+        # Wait longer and try multiple times
+        print("Waiting for page to load...")
+        wait = WebDriverWait(driver, 40)
+        
+        try:
+            wait.until(EC.presence_of_element_located((By.CLASS_NAME, "ttc-trafic-num")))
+            print("Found traffic elements")
+        except TimeoutException:
+            print("Timeout waiting for traffic elements. Trying to continue anyway...")
+            # Save page source for debugging
+            with open('/tmp/page_source.html', 'w', encoding='utf-8') as f:
+                f.write(driver.page_source)
+            print("Page source saved to /tmp/page_source.html")
         
         # Give extra time for numbers to update from 0
-        time.sleep(3)
+        time.sleep(5)
         
         # Try to find date in footer
         date_str = None
         try:
             date_element = driver.find_element(By.CSS_SELECTOR, "h3.footer-title span.footer-title-date.mrglovani")
             date_str = date_element.text.strip()
+            print(f"Found date element: {date_str}")
         except:
             # If not found, try alternative selectors
             try:
                 date_element = driver.find_element(By.CSS_SELECTOR, ".footer-title-date")
                 date_str = date_element.text.strip()
+                print(f"Found date element (alt): {date_str}")
             except:
                 print("Could not find date element. Using current date.")
                 date_obj = datetime.now()
@@ -140,7 +164,7 @@ def main():
                 date_obj = parse_date(date_str)
                 formatted_date = format_date(date_obj)
                 weekday = get_weekday(date_obj)
-                print(f"Found date: {date_str} -> {formatted_date} ({weekday})")
+                print(f"Parsed date: {date_str} -> {formatted_date} ({weekday})")
             except ValueError as e:
                 print(f"Error parsing date: {e}")
                 driver.quit()
@@ -155,6 +179,11 @@ def main():
         # Extract passenger numbers
         traffic_items = driver.find_elements(By.CLASS_NAME, "ttc-trafic-item")
         print(f"Found {len(traffic_items)} traffic items")
+        
+        if len(traffic_items) == 0:
+            print("No traffic items found. Page may not have loaded correctly.")
+            driver.quit()
+            sys.exit(1)
         
         transport_data = {}
         for item in traffic_items:
@@ -181,7 +210,8 @@ def main():
         # Check if we got any valid data
         if not any(transport_data.values()):
             print("Warning: All values are 0 or None. Page might not have loaded properly.")
-            return
+            print("Exiting without saving.")
+            sys.exit(1)
         
         # Create new entry
         new_entry = {
