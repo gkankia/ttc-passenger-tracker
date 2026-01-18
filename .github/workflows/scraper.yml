@@ -2,8 +2,9 @@ name: Daily TTC Scraper
 
 on:
   schedule:
-    # Run every day at 11:00 PM UTC (adjust timezone as needed)
-    - cron: '0 23 * * *'
+    # Run every day at 11:00 AM UTC (12:00 PM CET in winter)
+    # Note: CET is UTC+1, CEST is UTC+2 (summer)
+    - cron: '0 11 * * *'
   workflow_dispatch:  # Allows manual trigger from GitHub UI
 
 jobs:
@@ -33,7 +34,7 @@ jobs:
       
     - name: Commit and push if changed
       run: |
-        git config --global user.name 'GitHub Action'
-        git config --global user.email 'action@github.com'
-        git add data/ttc_passengers.csv
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git add data/ttc_passengers.json
         git diff --quiet && git diff --staged --quiet || (git commit -m "Update TTC data - $(date +'%Y-%m-%d')" && git push)
