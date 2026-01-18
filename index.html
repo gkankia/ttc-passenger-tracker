@@ -72,17 +72,28 @@
             gap: 20px;
         }
 
-        .comparison-section {
+        .map-section {
             background: #f9fafb;
             border-radius: 15px;
             padding: 25px;
             margin-bottom: 20px;
         }
 
-        .comparison-section h2 {
+        .map-section h3 {
             font-size: 1.5rem;
             margin-bottom: 20px;
             color: #333;
+        }
+
+        .map-container {
+            width: 100%;
+            height: 300px;
+            background: #e5e7eb;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
         }
 
         @media (min-width: 1024px) {
@@ -106,8 +117,13 @@
                 gap: 20px;
             }
 
-            .comparison-section {
+            .map-section {
                 margin-bottom: 0;
+            }
+
+            .map-container {
+                height: 100%;
+                min-height: 250px;
             }
         }
 
@@ -138,6 +154,17 @@
             display: flex;
             align-items: center;
             gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .insight-comparison {
+            font-size: 0.85rem;
+            color: #666;
+            padding-top: 10px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .change-positive {
@@ -150,41 +177,6 @@
 
         .change-neutral {
             color: #6b7280;
-        }
-
-        .comparison-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-        }
-
-        .comparison-item {
-            background: white;
-            padding: 15px;
-            border-radius: 1px;
-            border-left: 4px solid;
-        }
-
-        .comparison-item.bus { border-color: #3b82f6; }
-        .comparison-item.metro { border-color: #10b981; }
-        .comparison-item.minibus { border-color: #f59e0b; }
-        .comparison-item.cable { border-color: #8b5cf6; }
-
-        .comparison-item h4 {
-            font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 8px;
-        }
-
-        .comparison-value {
-            font-size: 1.3rem;
-            font-weight: bold;
-        }
-
-        .comparison-footer {
-            margin-top: 15px;
-            color: #666;
-            font-size: 0.9rem;
         }
 
         .legend {
@@ -216,7 +208,7 @@
         }
 
         @media (max-width: 768px) {
-            h1 {
+            h2 {
                 font-size: 1.8rem;
             }
 
@@ -229,10 +221,6 @@
             }
 
             .insights-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .comparison-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -404,6 +392,10 @@
             const latest = data[data.length - 1];
             const previous = data[data.length - 2];
 
+            // Calculate weekday/weekend averages
+            const weekdays = data.filter(d => !['Saturday', 'Sunday'].includes(d.weekday) && !isHoliday(d.date));
+            const weekends = data.filter(d => ['Saturday', 'Sunday'].includes(d.weekday) || isHoliday(d.date));
+
             const totalLatest = (latest.bus || 0) + (latest.metro || 0) + 
                                (latest.minibus || 0) + (latest.cable || 0);
             const totalPrevious = (previous.bus || 0) + (previous.metro || 0) + 
@@ -411,18 +403,37 @@
             const totalChange = calculateChange(totalLatest, totalPrevious);
 
             const modes = ['bus', 'metro', 'minibus', 'cable'];
+            const modeNames = { bus: 'Bus', metro: 'Metro', minibus: 'Minibus', cable: 'Cable' };
+            
             const cards = modes.map(mode => {
                 const change = calculateChange(latest[mode], previous[mode]);
                 const changeClass = getChangeClass(change);
                 const changeSymbol = getChangeSymbol(change);
 
+                // Calculate weekday/weekend comparison
+                let comparisonHtml = '';
+                if (weekdays.length > 0 && weekends.length > 0) {
+                    const weekdayAvg = weekdays.reduce((sum, d) => sum + (d[mode] || 0), 0) / weekdays.length;
+                    const weekendAvg = weekends.reduce((sum, d) => sum + (d[mode] || 0), 0) / weekends.length;
+                    const weekendChange = calculateChange(weekendAvg, weekdayAvg);
+                    const comparisonClass = getChangeClass(weekendChange);
+                    const comparisonSymbol = getChangeSymbol(weekendChange);
+
+                    comparisonHtml = `
+                        <div class="insight-comparison ${comparisonClass}">
+                            ${comparisonSymbol} ${Math.abs(weekendChange)}% weekend vs weekday
+                        </div>
+                    `;
+                }
+
                 return `
                     <div class="insight-card">
-                        <h3>${mode.charAt(0).toUpperCase() + mode.slice(1)}</h3>
+                        <h3>${modeNames[mode]}</h3>
                         <div class="insight-value">${(latest[mode] || 0).toLocaleString()}</div>
                         <div class="insight-change ${changeClass}">
                             ${changeSymbol} ${Math.abs(change)}% vs yesterday
                         </div>
+                        ${comparisonHtml}
                     </div>
                 `;
             }).join('');
@@ -437,46 +448,6 @@
                     </div>
                 </div>
                 ${cards}
-            `;
-        }
-
-        function createComparison(data) {
-            const weekdays = data.filter(d => !['Saturday', 'Sunday'].includes(d.weekday) && !isHoliday(d.date));
-            const weekends = data.filter(d => ['Saturday', 'Sunday'].includes(d.weekday) || isHoliday(d.date));
-
-            if (weekdays.length === 0 || weekends.length === 0) {
-                return '<p>Not enough data for weekday/weekend comparison</p>';
-            }
-
-            const modes = ['bus', 'metro', 'minibus', 'cable'];
-            const modeNames = { bus: 'Bus', metro: 'Metro', minibus: 'Minibus', cable: 'Cable' };
-            
-            const comparisons = modes.map(mode => {
-                const weekdayAvg = weekdays.reduce((sum, d) => sum + (d[mode] || 0), 0) / weekdays.length;
-                const weekendAvg = weekends.reduce((sum, d) => sum + (d[mode] || 0), 0) / weekends.length;
-                const change = calculateChange(weekendAvg, weekdayAvg);
-
-                return `
-                    <div class="comparison-item ${mode}">
-                        <h4>${modeNames[mode]}</h4>
-                        <div class="comparison-value ${getChangeClass(change)}">
-                            ${getChangeSymbol(change)} ${Math.abs(change)}%
-                        </div>
-                        <div style="font-size: 0.8rem; color: #666; margin-top: 5px;">
-                            Weekend vs Weekday
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            return `
-                <h3>Weekday vs Weekend Patterns</h3>
-                <div class="comparison-grid">
-                    ${comparisons}
-                </div>
-                <p class="comparison-footer">
-                    Based on ${weekdays.length} weekdays and ${weekends.length} weekend/holiday days
-                </p>
             `;
         }
 
@@ -502,8 +473,12 @@
                             ${createInsights(data)}
                         </div>
 
-                        <div class="comparison-section">
-                            ${createComparison(data)}
+                        <div class="map-section">
+                            <h3>Transport Network Map</h3>
+                            <div class="map-container">
+                                <!-- Embed your map here (e.g., Google Maps iframe, Leaflet, Mapbox) -->
+                                <p>Map placeholder - Add your map embed code here</p>
+                            </div>
                         </div>
                     </div>
                 </div>
