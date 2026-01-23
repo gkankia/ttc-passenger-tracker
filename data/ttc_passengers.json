@@ -46,5 +46,13 @@
     "metro": 433165,
     "minibus": 195677,
     "cable": 3611
+  },
+  {
+    "date": "22.01.2026",
+    "weekday": "Thursday",
+    "bus": 540870,
+    "metro": 440927,
+    "minibus": 199298,
+    "cable": 3883
   }
 ]
