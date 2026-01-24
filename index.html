@@ -552,52 +552,25 @@
 
         async function loadTransitStops() {
     try {
-        const response = await fetch('/.netlify/functions/transit', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'stops' })
-        });
-
+        // Call TTC API directly (CORS might block this)
+        const response = await fetch('https://transfer.msplus.ge:2443/otp/routers/ttc/index/stops');
+        
         const data = await response.json();
         
-        console.log('Raw stops data:', data);
-        console.log('Data type:', typeof data);
-        console.log('Is array?', Array.isArray(data));
+        console.log('Stops data:', data);
         
-        // Handle different possible response formats
         let stops = [];
-        
         if (Array.isArray(data)) {
             stops = data;
-        } else if (data && typeof data === 'object') {
-            // If it's an object, convert to array
+        } else if (typeof data === 'object') {
             stops = Object.values(data);
-        } else if (data && data.stops) {
-            stops = Array.isArray(data.stops) ? data.stops : Object.values(data.stops);
         }
 
-        console.log('Processed stops count:', stops.length);
-        console.log('First stop sample:', stops[0]);
-
-        if (!stops || stops.length === 0) {
-            console.error('No stops found in response');
-            return;
-        }
-
-        // Filter stops
         const filteredStops = stops.filter(stop => 
             stop && (stop.vehicleMode === 'BUS' || stop.vehicleMode === 'SUBWAY')
         );
 
-        console.log(`Filtered to ${filteredStops.length} bus/metro stops`);
-
-        // Add markers
         filteredStops.forEach(stop => {
-            if (!stop.lon || !stop.lat) {
-                console.warn('Stop missing coordinates:', stop);
-                return;
-            }
-
             const color = getStopColor(stop.vehicleMode);
             
             const el = document.createElement('div');
@@ -619,11 +592,10 @@
             markers.push(marker);
         });
 
-        console.log(`Successfully loaded ${filteredStops.length} transit stops`);
+        console.log(`Loaded ${filteredStops.length} transit stops`);
 
     } catch (error) {
         console.error('Error loading transit stops:', error);
-        console.error('Error details:', error.message);
     }
 }
 
