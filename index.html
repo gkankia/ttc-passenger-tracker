@@ -549,81 +549,82 @@
             });
         }
 
-        // Decode Google's encoded polyline format
-        function decodePolyline(encoded) {
-            const coordinates = [];
-            let index = 0;
-            let lat = 0;
-            let lng = 0;
-
-            while (index < encoded.length) {
-                let b, shift = 0, result = 0;
-                do {
-                    b = encoded.charCodeAt(index++) - 63;
-                    result |= (b & 0x1f) << shift;
-                    shift += 5;
-                } while (b >= 0x20);
-                const dlat = ((result & 1) ? ~(result >> 1) : (result >> 1));
-                lat += dlat;
-
-                shift = 0;
-                result = 0;
-                do {
-                    b = encoded.charCodeAt(index++) - 63;
-                    result |= (b & 0x1f) << shift;
-                    shift += 5;
-                } while (b >= 0x20);
-                const dlng = ((result & 1) ? ~(result >> 1) : (result >> 1));
-                lng += dlng;
-
-                coordinates.push([lng / 1e5, lat / 1e5]);
-            }
-
-            return coordinates;
-        }
-
         async function loadTransitStops() {
-            try {
-                const response = await fetch('/.netlify/functions/transit', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'stops' })
-                });
+    try {
+        const response = await fetch('/.netlify/functions/transit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'stops' })
+        });
 
-                const stops = await response.json();
-
-                const filteredStops = stops.filter(stop => 
-                    stop.vehicleMode === 'BUS' || stop.vehicleMode === 'SUBWAY'
-                );
-
-                filteredStops.forEach(stop => {
-                    const color = getStopColor(stop.vehicleMode);
-                    
-                    const el = document.createElement('div');
-                    el.className = 'transit-marker';
-                    el.style.backgroundColor = color;
-                    el.style.width = '12px';
-                    el.style.height = '12px';
-                    el.style.borderRadius = '50%';
-                    el.style.border = '2px solid white';
-                    el.style.cursor = 'pointer';
-                    el.style.boxShadow = '0 0 4px rgba(0,0,0,0.3)';
-
-                    const marker = new mapboxgl.Marker(el)
-                        .setLngLat([stop.lon, stop.lat])
-                        .addTo(map);
-
-                    el.addEventListener('click', () => showStopArrivals(stop));
-
-                    markers.push(marker);
-                });
-
-                console.log(`Loaded ${filteredStops.length} transit stops`);
-
-            } catch (error) {
-                console.error('Error loading transit stops:', error);
-            }
+        const data = await response.json();
+        
+        console.log('Raw stops data:', data);
+        console.log('Data type:', typeof data);
+        console.log('Is array?', Array.isArray(data));
+        
+        // Handle different possible response formats
+        let stops = [];
+        
+        if (Array.isArray(data)) {
+            stops = data;
+        } else if (data && typeof data === 'object') {
+            // If it's an object, convert to array
+            stops = Object.values(data);
+        } else if (data && data.stops) {
+            stops = Array.isArray(data.stops) ? data.stops : Object.values(data.stops);
         }
+
+        console.log('Processed stops count:', stops.length);
+        console.log('First stop sample:', stops[0]);
+
+        if (!stops || stops.length === 0) {
+            console.error('No stops found in response');
+            return;
+        }
+
+        // Filter stops
+        const filteredStops = stops.filter(stop => 
+            stop && (stop.vehicleMode === 'BUS' || stop.vehicleMode === 'SUBWAY')
+        );
+
+        console.log(`Filtered to ${filteredStops.length} bus/metro stops`);
+
+        // Add markers
+        filteredStops.forEach(stop => {
+            if (!stop.lon || !stop.lat) {
+                console.warn('Stop missing coordinates:', stop);
+                return;
+            }
+
+            const color = getStopColor(stop.vehicleMode);
+            
+            const el = document.createElement('div');
+            el.className = 'transit-marker';
+            el.style.backgroundColor = color;
+            el.style.width = '12px';
+            el.style.height = '12px';
+            el.style.borderRadius = '50%';
+            el.style.border = '2px solid white';
+            el.style.cursor = 'pointer';
+            el.style.boxShadow = '0 0 4px rgba(0,0,0,0.3)';
+
+            const marker = new mapboxgl.Marker(el)
+                .setLngLat([stop.lon, stop.lat])
+                .addTo(map);
+
+            el.addEventListener('click', () => showStopArrivals(stop));
+
+            markers.push(marker);
+        });
+
+        console.log(`Successfully loaded ${filteredStops.length} transit stops`);
+
+    } catch (error) {
+        console.error('Error loading transit stops:', error);
+        console.error('Error details:', error.message);
+    }
+}
 
         function getStopColor(vehicleMode) {
             switch (vehicleMode) {
