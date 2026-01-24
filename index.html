@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Public Transport Use in Tbilisi</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css' rel='stylesheet' />
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js'></script>
     <style>
 
         @import url('https://fonts.googleapis.com/css2?family=Fira+Mono&display=swap');
@@ -130,6 +132,24 @@
             height: 100%;
             border: 0;
             border-radius: 10px;
+        }
+
+        .transit-marker {
+            transition: transform 0.2s;
+        }
+
+        .transit-marker:hover {
+            transform: scale(1.3);
+        }
+
+        .mapboxgl-popup-content {
+            border-radius: 10px !important;
+            padding: 15px !important;
+        }
+
+        .mapboxgl-popup-close-button {
+            font-size: 20px !important;
+            padding: 5px 10px !important;
         }
 
         @media (min-width: 1024px) {
@@ -507,6 +527,137 @@
             `;
         }
 
+        // ========== ADD TRANSIT MAP CODE HERE ==========
+        let map;
+        let markers = [];
+
+        async function initTransitMap() {
+            mapboxgl.accessToken = 'pk.eyJ1Ijoiam9yam9uZTkwIiwiYSI6ImNrZ3R6M2FvdTBwbmwycXBibGRqM2w2enYifQ.BxjvFSGqefuC9yFCrXC-nQ';
+            
+            map = new mapboxgl.Map({
+                container: 'transit-map',
+                style: 'mapbox://styles/jorjone90/clplq461o00wy01o93mm76il6',
+                center: [44.8271, 41.7151],
+                zoom: 12
+            });
+
+            map.on('load', async () => {
+                await loadTransitStops();
+            });
+        }
+
+        async function loadTransitStops() {
+            try {
+                const response = await fetch('/.netlify/functions/transit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'stops' })
+                });
+
+                const stops = await response.json();
+
+                const filteredStops = stops.filter(stop => 
+                    stop.vehicleMode === 'BUS' || stop.vehicleMode === 'SUBWAY'
+                );
+
+                filteredStops.forEach(stop => {
+                    const color = getStopColor(stop.vehicleMode);
+                    
+                    const el = document.createElement('div');
+                    el.className = 'transit-marker';
+                    el.style.backgroundColor = color;
+                    el.style.width = '12px';
+                    el.style.height = '12px';
+                    el.style.borderRadius = '50%';
+                    el.style.border = '2px solid white';
+                    el.style.cursor = 'pointer';
+                    el.style.boxShadow = '0 0 4px rgba(0,0,0,0.3)';
+
+                    const marker = new mapboxgl.Marker(el)
+                        .setLngLat([stop.lon, stop.lat])
+                        .addTo(map);
+
+                    el.addEventListener('click', () => showStopArrivals(stop));
+
+                    markers.push(marker);
+                });
+
+                console.log(`Loaded ${filteredStops.length} transit stops`);
+
+            } catch (error) {
+                console.error('Error loading transit stops:', error);
+            }
+        }
+
+        function getStopColor(vehicleMode) {
+            switch (vehicleMode) {
+                case 'BUS': return '#3b82f6';
+                case 'SUBWAY': return '#10b981';
+                case 'GONDOLA': return '#8b5cf6';
+                default: return '#f59e0b';
+            }
+        }
+
+        async function showStopArrivals(stop) {
+            try {
+                const response = await fetch('/.netlify/functions/transit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        action: 'arrivals',
+                        stopId: stop.id
+                    })
+                });
+
+                const arrivals = await response.json();
+
+                const arrivalsHtml = arrivals
+                    .slice(0, 5)
+                    .map(arrival => `
+                        <div style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <strong style="color: ${arrival.color || '#333'};">
+                                        ${arrival.shortName}
+                                    </strong>
+                                    <span style="font-size: 0.85rem; color: #666;">
+                                        → ${arrival.headsign}
+                                    </span>
+                                </div>
+                                <div style="text-align: right;">
+                                    <strong style="color: ${arrival.realtime ? '#10b981' : '#666'};">
+                                        ${arrival.realtimeArrivalMinutes} min
+                                    </strong>
+                                    ${arrival.realtime ? 
+                                        '<div style="font-size: 0.7rem; color: #10b981;">●LIVE</div>' : 
+                                        '<div style="font-size: 0.7rem; color: #999;">scheduled</div>'
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+
+                const popup = new mapboxgl.Popup({ offset: 25 })
+                    .setLngLat([stop.lon, stop.lat])
+                    .setHTML(`
+                        <div style="min-width: 250px; font-family: 'Fira Mono', monospace;">
+                            <h3 style="margin: 0 0 10px 0; font-size: 1rem; color: #333;">
+                                ${stop.name}
+                            </h3>
+                            <div style="font-size: 0.75rem; color: #666; margin-bottom: 10px;">
+                                Stop ID: ${stop.code || stop.id}
+                            </div>
+                            ${arrivalsHtml || '<p style="color: #999;">No arrivals available</p>'}
+                        </div>
+                    `)
+                    .addTo(map);
+
+            } catch (error) {
+                console.error('Error loading arrivals:', error);
+            }
+        }
+        // ========== END TRANSIT MAP CODE ==========
+
         async function initDashboard() {
             const data = await loadData();
             
@@ -548,15 +699,8 @@
                         </div>
 
                         <div class="map-section">
-                            <h3>Transport Network Map</h3>
-                            <div class="map-container">
-                                <!--<iframe      
-                                    src="https://api.mapbox.com/styles/v1/jorjone90/clplq461o00wy01o93mm76il6.html?title=false&access_token=pk.eyJ1Ijoiam9yam9uZTkwIiwiYSI6ImNrZ3R6M2FvdTBwbmwycXBibGRqM2w2enYifQ.BxjvFSGqefuC9yFCrXC-nQ&zoomwheel=false#7.14/41.955/43.795" 
-                                    title="Transport Network Map" 
-                                    loading="lazy">
-                                </iframe>-->
-                                <p>Coming soon...</p>
-                            </div>
+                            <h3>Live Transit Map</h3>
+                            <div id="transit-map" style="width: 100%; height: 100%; min-height: 300px; border-radius: 10px;"></div>
                         </div>
                     </div>
                 </div>
@@ -578,6 +722,8 @@
 
             document.getElementById('dashboard').innerHTML = html;
             createChart(data);
+            initTransitMap(); // ADD THIS LINE
+
         }
 
         initDashboard();
