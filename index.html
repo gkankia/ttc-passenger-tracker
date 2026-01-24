@@ -534,98 +534,20 @@
         let markers = [];
 
         async function initTransitMap() {
-    mapboxgl.accessToken = 'pk.eyJ1Ijoiam9yam9uZTkwIiwiYSI6ImNrZ3R6M2FvdTBwbmwycXBibGRqM2w2enYifQ.BxjvFSGqefuC9yFCrXC-nQ';
-    
-    map = new mapboxgl.Map({
-        container: 'transit-map',
-        style: 'mapbox://styles/jorjone90/clplq461o00wy01o93mm76il6',
-        center: [44.8271, 41.7151],
-        zoom: 12
-    });
+            mapboxgl.accessToken = 'pk.eyJ1Ijoiam9yam9uZTkwIiwiYSI6ImNrZ3R6M2FvdTBwbmwycXBibGRqM2w2enYifQ.BxjvFSGqefuC9yFCrXC-nQ';
+            
+            map = new mapboxgl.Map({
+                container: 'transit-map',
+                style: 'mapbox://styles/jorjone90/clplq461o00wy01o93mm76il6',
+                center: [44.8271, 41.7151],
+                zoom: 12
+            });
 
-    map.on('load', async () => {
-        addMetroLines(); // Add metro lines manually
-        await loadTransitStops();
-    });
-}
-
-function addMetroLines() {
-    // Tbilisi Metro Line 1 (Akhmeteli-Varketili) - approximate coordinates
-    const line1Coords = [
-        [44.8032, 41.7877], // Akhmeteli Theatre
-        [44.8027, 41.7810], // Sarajishvili
-        [44.8014, 41.7752], // Guramishvili
-        [44.7986, 41.7660], // Grmagele
-        [44.7972, 41.6943], // Didube
-        [44.7981, 41.7222], // Gotsiridze
-        [44.7993, 41.7151], // Nadzaladevi
-        [44.8024, 41.7086], // Station Square
-        [44.8014, 41.6926], // Liberty Square
-        [44.7972, 41.6943], // Rustaveli
-        [44.7919, 41.6944], // Marjanishvili
-        [44.7833, 41.6958], // Technical University
-        [44.7747, 41.6978], // Medical University
-        [44.7596, 41.7036], // Delisi
-        [44.7492, 41.7094], // Vazha-Pshavela
-        [44.7365, 41.7181]  // Varketili
-    ];
-
-    // Tbilisi Metro Line 2 (Saburtalo) - approximate coordinates  
-    const line2Coords = [
-        [44.7747, 41.7178], // Saburtalo
-        [44.7747, 41.7100], // Technical University (interchange)
-        [44.7833, 41.6958], // Rustaveli (interchange)
-        [44.8014, 41.6926]  // Liberty Square (interchange)
-    ];
-
-    // Add Line 1
-    map.addSource('metro-line-1', {
-        type: 'geojson',
-        data: {
-            type: 'Feature',
-            geometry: {
-                type: 'LineString',
-                coordinates: line1Coords
-            }
+            map.on('load', async () => {
+                console.log('Map loaded, loading transit stops...');
+                await loadTransitStops();
+            });
         }
-    });
-
-    map.addLayer({
-        id: 'metro-line-1-layer',
-        type: 'line',
-        source: 'metro-line-1',
-        paint: {
-            'line-color': '#10b981',
-            'line-width': 4,
-            'line-opacity': 0.8
-        }
-    });
-
-    // Add Line 2
-    map.addSource('metro-line-2', {
-        type: 'geojson',
-        data: {
-            type: 'Feature',
-            geometry: {
-                type: 'LineString',
-                coordinates: line2Coords
-            }
-        }
-    });
-
-    map.addLayer({
-        id: 'metro-line-2-layer',
-        type: 'line',
-        source: 'metro-line-2',
-        paint: {
-            'line-color': '#3b82f6',
-            'line-width': 4,
-            'line-opacity': 0.8
-        }
-    });
-
-    console.log('Metro lines added to map');
-}
 
         // Decode Google's encoded polyline format
         function decodePolyline(encoded) {
