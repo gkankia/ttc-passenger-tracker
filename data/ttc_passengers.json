@@ -22,5 +22,45 @@
     "metro": 245558,
     "minibus": 116532,
     "cable": 4077
+  },
+  {
+    "date": "19.01.2026",
+    "weekday": "Monday",
+    "bus": 285476,
+    "metro": 258002,
+    "minibus": 119689,
+    "cable": 3410
+  },
+  {
+    "date": "20.01.2026",
+    "weekday": "Tuesday",
+    "bus": 514479,
+    "metro": 422699,
+    "minibus": 190903,
+    "cable": 3892
+  },
+  {
+    "date": "21.01.2026",
+    "weekday": "Wednesday",
+    "bus": 528511,
+    "metro": 433165,
+    "minibus": 195677,
+    "cable": 3611
+  },
+  {
+    "date": "22.01.2026",
+    "weekday": "Thursday",
+    "bus": 540870,
+    "metro": 440927,
+    "minibus": 199298,
+    "cable": 3883
+  },
+  {
+    "date": "23.01.2026",
+    "weekday": "Friday",
+    "bus": 540111,
+    "metro": 445607,
+    "minibus": 198396,
+    "cable": 4586
   }
 ]
