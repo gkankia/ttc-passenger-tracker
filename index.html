@@ -530,66 +530,7 @@
         }
 
         // ========== ADD TRANSIT MAP CODE HERE ==========
-        let map;
-        let markers = [];
-
-        async function initTransitMap() {
-    mapboxgl.accessToken = 'pk.eyJ1Ijoiam9yam9uZTkwIiwiYSI6ImNrZ3R6M2FvdTBwbmwycXBibGRqM2w2enYifQ.BxjvFSGqefuC9yFCrXC-nQ';
-    
-    map = new mapboxgl.Map({
-        container: 'transit-map',
-        style: 'mapbox://styles/jorjone90/clplq461o00wy01o93mm76il6',
-        center: [44.8271, 41.7151],
-        zoom: 12
-    });
-
-    map.on('load', () => {
-        addMajorStops();
-    });
-}
-
-function addMajorStops() {
-    // Major Metro Stations
-    const majorStops = [
-        { name: 'Rustaveli Metro', lat: 41.6943, lon: 44.7972, type: 'metro' },
-        { name: 'Freedom Square', lat: 41.6926, lon: 44.8014, type: 'metro' },
-        { name: 'Station Square', lat: 41.7086, lon: 44.8024, type: 'metro' },
-        { name: 'Didube Metro', lat: 41.7660, lon: 44.7986, type: 'metro' },
-        { name: 'Marjanishvili Metro', lat: 41.6944, lon: 44.7919, type: 'metro' },
-        { name: 'Technical University Metro', lat: 41.6978, lon: 44.7747, type: 'metro' },
-        { name: 'Vazha-Pshavela Metro', lat: 41.7094, lon: 44.7492, type: 'metro' },
-        { name: 'Saburtalo Metro', lat: 41.7178, lon: 44.7747, type: 'metro' }
-    ];
-
-    majorStops.forEach(stop => {
-        const color = stop.type === 'metro' ? '#10b981' : '#3b82f6';
-        
-        const el = document.createElement('div');
-        el.style.backgroundColor = color;
-        el.style.width = '16px';
-        el.style.height = '16px';
-        el.style.borderRadius = '50%';
-        el.style.border = '3px solid white';
-        el.style.cursor = 'pointer';
-        el.style.boxShadow = '0 0 6px rgba(0,0,0,0.4)';
-
-        const marker = new mapboxgl.Marker(el)
-            .setLngLat([stop.lon, stop.lat])
-            .setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(`
-                <div style="font-family: 'Fira Mono', monospace; min-width: 200px;">
-                    <h3 style="margin: 0 0 10px 0; font-size: 1rem;">${stop.name}</h3>
-                    <a href="https://www.google.com/maps/dir/?api=1&destination=${stop.lat},${stop.lon}&travelmode=transit" 
-                       target="_blank"
-                       style="color: #667eea; text-decoration: none; font-size: 0.9rem;">
-                        View live departures on Google Maps →
-                    </a>
-                </div>
-            `))
-            .addTo(map);
-    });
-
-    console.log(`Added ${majorStops.length} major transit stops`);
-}
+       
 
         async function initDashboard() {
             const data = await loadData();
@@ -635,12 +576,7 @@ function addMajorStops() {
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                                 <h3 style="margin: 0;">Live Transit Map</h3>
                                 <div style="display: flex; gap: 10px; font-size: 0.75rem;">
-                                    <button onclick="toggleRoutes('BUS')" style="padding: 5px 10px; border-radius: 5px; border: 1px solid #3b82f6; background: white; color: #3b82f6; cursor: pointer;">
-                                        Bus Routes
-                                    </button>
-                                    <button onclick="toggleRoutes('SUBWAY')" style="padding: 5px 10px; border-radius: 5px; border: 1px solid #10b981; background: white; color: #10b981; cursor: pointer;">
-                                        Metro Routes
-                                    </button>
+                                    
                                 </div>
                             </div>
                             <div id="transit-map" style="width: 100%; height: 100%; min-height: 300px; border-radius: 10px;"></div>
@@ -665,8 +601,6 @@ function addMajorStops() {
 
             document.getElementById('dashboard').innerHTML = html;
             createChart(data);
-            initTransitMap(); // ADD THIS LINE
-
         }
 
         initDashboard();
