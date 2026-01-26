@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/gkankia/ttc-passenger-tracker#readme",
   "dependencies": {
-    "node-fetch": "^2.7.0"
+    "node-fetch": "^2.7.0",
+    "ttc-api": "^2.0.0"
   }
 }
