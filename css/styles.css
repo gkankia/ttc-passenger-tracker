@@ -257,23 +257,31 @@ h3 {
 /* ========== RESPONSIVE DESIGN ========== */
 @media (min-width: 1024px) {
     .main-content {
-        grid-template-columns: 60fr 40fr;
+        grid-template-columns: 65fr 35fr;
         align-items: stretch;
+        height: calc(100vh - 250px); /* Adjust based on header + footer height */
     }
 
     .chart-container {
-        height: auto;
+        height: 100%;
         min-height: 500px;
+        padding-bottom: 50px;
     }
 
     .right-column {
         display: flex;
         flex-direction: column;
         gap: 20px;
+        height: 100%;
+    }
+
+    .insights-grid {
+        flex-shrink: 0; /* Don't shrink cards */
     }
 
     .map-section {
         flex: 1;
+        min-height: 0; /* Allow flex to shrink properly */
     }
 
     .map-container {
@@ -291,7 +299,18 @@ h3 {
     }
 
     .chart-container {
-        height: 300px;
+        height: 350px;
+        padding-bottom: 60px;
+    }
+
+    .chart-legend {
+        flex-wrap: wrap;
+        max-width: 90%;
+        gap: 10px;
+    }
+
+    .chart-legend-item {
+        font-size: 0.75rem;
     }
 
     .insights-grid {
