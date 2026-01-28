@@ -59,11 +59,48 @@ function getChangeSymbol(change) {
     return '→';
 }
 
+// ========== CHART PLUGIN FOR WEEKEND HIGHLIGHTING ==========
+const weekendHighlightPlugin = {
+    id: 'weekendHighlight',
+    beforeDatasetsDraw(chart) {
+        const { ctx, chartArea: { left, right, top, bottom }, scales: { x, y } } = chart;
+        
+        ctx.save();
+        
+        // Get the data to check weekdays
+        const data = chart.data.labels;
+        
+        data.forEach((label, index) => {
+            // Parse the date from label (e.g., "Jan 17")
+            const dateStr = chart.config.options.plugins.weekendHighlight.dates[index];
+            const date = parseDate(dateStr);
+            const dayOfWeek = date.getDay();
+            
+            // Check if it's Saturday (6) or Sunday (0)
+            if (dayOfWeek === 0 || dayOfWeek === 6) {
+                const xPos = x.getPixelForValue(index);
+                const barWidth = x.width / data.length;
+                
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.03)';
+                ctx.fillRect(
+                    xPos - barWidth / 2,
+                    top,
+                    barWidth,
+                    bottom - top
+                );
+            }
+        });
+        
+        ctx.restore();
+    }
+};
+
 // ========== CHART CREATION ==========
 function createChart(data) {
     const ctx = document.getElementById('passengerChart').getContext('2d');
     
     const labels = data.map(d => formatDate(d.date));
+    const dates = data.map(d => d.date); // Keep original dates for weekend detection
 
     const datasets = [
         {
@@ -133,6 +170,9 @@ function createChart(data) {
                                    context.parsed.y.toLocaleString() + ' passengers';
                         }
                     }
+                },
+                weekendHighlight: {
+                    dates: dates // Pass original dates to the plugin
                 }
             },
             scales: {
@@ -153,7 +193,8 @@ function createChart(data) {
                     }
                 }
             }
-        }
+        },
+        plugins: [weekendHighlightPlugin]
     });
 }
 
