@@ -1,0 +1,304 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Mono&display=swap');
+
+/* ========== RESET ========== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ========== BASE STYLES ========== */
+body {
+    font-family: "Fira Mono", monospace;
+    background: #ffffff;
+    min-height: 100vh;
+    padding: 20px;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* ========== HEADER ========== */
+header {
+    text-align: center;
+    color: rgb(36, 28, 28);
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+h2 {
+    font-size: 2rem;
+    margin-bottom: 5px;
+}
+
+h3 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+/* ========== DASHBOARD ========== */
+.dashboard {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 60px rgba(130, 129, 129, 0.3);
+}
+
+.main-content {
+    display: grid;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+/* ========== CHART SECTION ========== */
+.chart-container {
+    position: relative;
+    height: 400px;
+}
+
+.chart-legend {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    z-index: 10;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+}
+
+.chart-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+}
+
+.chart-legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+}
+
+/* ========== INSIGHTS GRID ========== */
+.insights-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.insight-card {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.insight-card h3 {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.insight-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.insight-change {
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.insight-comparison {
+    font-size: 0.85rem;
+    color: #666;
+    padding-top: 10px;
+    border-top: 1px solid rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.change-positive {
+    color: #10b981;
+}
+
+.change-negative {
+    color: #ef4444;
+}
+
+.change-neutral {
+    color: #6b7280;
+}
+
+/* ========== MAP SECTION ========== */
+.map-section {
+    border-radius: 15px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.map-section h3 {
+    margin-bottom: 15px;
+}
+
+.map-container {
+    width: 100%;
+    flex: 1;
+    min-height: 300px;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.map-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 10px;
+}
+
+/* ========== TRANSIT MARKERS ========== */
+.transit-marker {
+    transition: transform 0.2s;
+}
+
+.transit-marker:hover {
+    transform: scale(1.3);
+}
+
+.mapboxgl-popup-content {
+    border-radius: 10px !important;
+    padding: 15px !important;
+}
+
+.mapboxgl-popup-close-button {
+    font-size: 20px !important;
+    padding: 5px 10px !important;
+}
+
+/* ========== FOOTER ========== */
+.footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.footer-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.footer-logo-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.footer-logo-img {
+    width: 75px;
+    height: auto;
+}
+
+.footer a {
+    color: #667eea;
+    text-decoration: none;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+.footer-divider {
+    margin: 0 8px;
+    color: #d1d5db;
+}
+
+/* ========== UTILITY ========== */
+.legend {
+    display: none;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+@media (min-width: 1024px) {
+    .main-content {
+        grid-template-columns: 60fr 40fr;
+        align-items: stretch;
+    }
+
+    .chart-container {
+        height: auto;
+        min-height: 500px;
+    }
+
+    .right-column {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .map-section {
+        flex: 1;
+    }
+
+    .map-container {
+        min-height: 250px;
+    }
+}
+
+@media (max-width: 768px) {
+    h2 {
+        font-size: 1.8rem;
+    }
+
+    .dashboard {
+        padding: 20px;
+    }
+
+    .chart-container {
+        height: 300px;
+    }
+
+    .insights-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .map-container {
+        min-height: 350px;
+    }
+}
