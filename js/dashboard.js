@@ -278,7 +278,7 @@ async function initDashboard() {
                 </div>
 
                 <div class="map-section">
-                    <h3>Transit Network Map</h3>
+                    <!--<h3>Transit Network Map</h3>-->
                     <!--<div id="transit-map"></div>-->
                 </div>
             </div>
