@@ -270,10 +270,15 @@ function updateInsights(index) {
 function updateTotalCard(total, change, date) {
     const valueElement = document.querySelector('.total-value');
     const changeElement = document.querySelector('.total-change');
+    const dateElement = document.querySelector('.total-date');
 
     if (valueElement) {
         const oldValue = parseInt(valueElement.textContent.replace(/,/g, '')) || 0;
         animateNumber(valueElement, oldValue, total);
+    }
+
+    if (dateElement) {
+        dateElement.textContent = formatDate(date);
     }
 
     if (changeElement) {
@@ -285,7 +290,7 @@ function updateTotalCard(total, change, date) {
             changeElement.className = `insight-change ${changeClass}`;
             changeElement.style.color = changeClass === 'change-positive' ? '#10b981' : 
                                         changeClass === 'change-negative' ? '#ef4444' : '#6b7280';
-            changeElement.innerHTML = `${changeSymbol} ${Math.abs(change)}% vs yesterday${holidayBadge}`;
+            changeElement.innerHTML = `${changeSymbol} ${Math.abs(change)}% vs prev. day${holidayBadge}`;
         } else {
             // First day - hide or show placeholder
             changeElement.className = 'insight-change';
@@ -312,7 +317,7 @@ function updateModeCard(mode, value, change, weekendChange) {
         changeElement.className = `insight-change ${changeClass}`;
         changeElement.style.color = changeClass === 'change-positive' ? '#10b981' : 
                                     changeClass === 'change-negative' ? '#ef4444' : '#6b7280';
-        changeElement.innerHTML = `${changeSymbol} ${Math.abs(change)}% vs yesterday`;
+        changeElement.innerHTML = `${changeSymbol} ${Math.abs(change)}% vs prev. day`;
     }
 
     if (comparisonElement && weekendChange !== null) {
@@ -370,7 +375,7 @@ function createInsights(data) {
                 <h3>${modeNames[mode]}</h3>
                 <div class="insight-value ${mode}-value">${(latest[mode] || 0).toLocaleString()}</div>
                 <div class="insight-change ${mode}-change ${changeClass}" style="color: ${changeClass === 'change-positive' ? '#10b981' : changeClass === 'change-negative' ? '#ef4444' : '#6b7280'};">
-                    ${changeSymbol} ${Math.abs(change)}% vs yesterday
+                    ${changeSymbol} ${Math.abs(change)}% vs prev. day
                 </div>
                 ${comparisonHtml}
             </div>
@@ -381,8 +386,9 @@ function createInsights(data) {
         <div class="insight-card" style="grid-column: 1 / -1; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
             <h3 style="color: rgba(255,255,255,0.9);">TOTAL PASSENGERS</h3>
             <div class="insight-value total-value" style="color: white;">${totalLatest.toLocaleString()}</div>
+            <div class="total-date" style="color: rgba(255,255,255,0.8); font-size: 0.9em; margin-top: 4px;">${formatDate(latest.date)}</div>
             <div class="insight-change total-change" style="color: rgba(255,255,255,0.9);">
-                ${getChangeSymbol(totalChange)} ${Math.abs(totalChange)}% vs yesterday
+                ${getChangeSymbol(totalChange)} ${Math.abs(totalChange)}% vs prev. day
                 ${isHoliday(latest.date) ? ' 🎉 Public Holiday' : ''}
             </div>
         </div>
