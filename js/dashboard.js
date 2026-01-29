@@ -400,10 +400,10 @@ function createInsights(data) {
             <div class="insight-card">
                 <h3>${modeNames[mode]}</h3>
                 <div class="insight-value ${mode}-value">${(latest[mode] || 0).toLocaleString()}</div>
-                <div class="insight-change ${mode}-change">
+                <div class="insight-change ${mode}-change ${changeClass}" style="color: ${changeClass === 'change-positive' ? '#10b981' : changeClass === 'change-negative' ? '#ef4444' : '#6b7280'};">
                     ${changeSymbol} ${Math.abs(change)}% vs yesterday
                 </div>
-                <div class="insight-comparison ${mode}-comparison">
+                <div class="insight-comparison ${mode}-comparison ${comparisonClass}" style="color: ${comparisonClass === 'change-positive' ? '#10b981' : comparisonClass === 'change-negative' ? '#ef4444' : '#6b7280'};">
                     ${comparisonHtml}
                 </div>
             </div>
