@@ -312,8 +312,9 @@ h3 {
 
     .chart-legend {
         flex-wrap: wrap;
-        max-width: 90%;
-        gap: 10px;
+        max-width: 95%;
+        gap: 8px 12px;
+        padding: 8px 15px;
     }
 
     .chart-legend-item {
