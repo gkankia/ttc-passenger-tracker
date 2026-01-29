@@ -226,6 +226,15 @@ function createChart(data) {
         plugins: [weekendHolidayHighlightPlugin]
     });
 
+    // Add direct mouse event listener as backup
+    ctx.canvas.addEventListener('mousemove', (e) => {
+        const points = chart.getElementsAtEventForMode(e, 'index', { intersect: false }, false);
+        if (points.length > 0) {
+            const index = points[0].index;
+            updateInsights(index);
+        }
+    });
+
     // Set canvas cursor to pointer
     ctx.canvas.style.cursor = 'pointer';
 }
@@ -305,24 +314,38 @@ function updateModeCard(mode, value, change, weekendChange) {
         animateNumber(valueElement, oldValue, value);
     }
 
-    if (changeElement && change !== null) {
-        const changeClass = getChangeClass(change);
-        const changeSymbol = getChangeSymbol(change);
-        
-        changeElement.className = `insight-change ${changeClass}`;
-        changeElement.style.color = changeClass === 'change-positive' ? '#10b981' : 
-                                    changeClass === 'change-negative' ? '#ef4444' : '#6b7280';
-        changeElement.innerHTML = `${changeSymbol} ${Math.abs(change)}% vs yesterday`;
+    if (changeElement) {
+        if (change !== null) {
+            const changeClass = getChangeClass(change);
+            const changeSymbol = getChangeSymbol(change);
+            
+            changeElement.className = `insight-change ${changeClass}`;
+            changeElement.style.color = changeClass === 'change-positive' ? '#10b981' : 
+                                        changeClass === 'change-negative' ? '#ef4444' : '#6b7280';
+            changeElement.innerHTML = `${changeSymbol} ${Math.abs(change)}% vs yesterday`;
+        } else {
+            // First day - show placeholder
+            changeElement.className = 'insight-change';
+            changeElement.style.color = '#6b7280';
+            changeElement.innerHTML = '—';
+        }
     }
 
-    if (comparisonElement && weekendChange !== null) {
-        const comparisonClass = getChangeClass(weekendChange);
-        const comparisonSymbol = getChangeSymbol(weekendChange);
-        
-        comparisonElement.className = `insight-comparison ${comparisonClass}`;
-        comparisonElement.style.color = comparisonClass === 'change-positive' ? '#10b981' : 
-                                        comparisonClass === 'change-negative' ? '#ef4444' : '#6b7280';
-        comparisonElement.innerHTML = `${comparisonSymbol} ${Math.abs(weekendChange)}% weekend vs weekday`;
+    if (comparisonElement) {
+        if (weekendChange !== null) {
+            const comparisonClass = getChangeClass(weekendChange);
+            const comparisonSymbol = getChangeSymbol(weekendChange);
+            
+            comparisonElement.className = `insight-comparison ${comparisonClass}`;
+            comparisonElement.style.color = comparisonClass === 'change-positive' ? '#10b981' : 
+                                            comparisonClass === 'change-negative' ? '#ef4444' : '#6b7280';
+            comparisonElement.innerHTML = `${comparisonSymbol} ${Math.abs(weekendChange)}% weekend vs weekday`;
+        } else {
+            // Not enough data for comparison
+            comparisonElement.className = 'insight-comparison';
+            comparisonElement.style.color = '#6b7280';
+            comparisonElement.innerHTML = '—';
+        }
     }
 }
 
