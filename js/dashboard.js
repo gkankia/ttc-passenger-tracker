@@ -240,10 +240,6 @@ function updateInsights(index) {
     
     console.log('Current date:', current.date, 'Current bus:', current.bus);
 
-    // Calculate weekday/weekend averages (all data)
-    const weekdays = globalData.filter(d => !['Saturday', 'Sunday'].includes(d.weekday) && !isHoliday(d.date));
-    const weekends = globalData.filter(d => ['Saturday', 'Sunday'].includes(d.weekday) || isHoliday(d.date));
-
     // Update total
     const totalCurrent = (current.bus || 0) + (current.metro || 0) + (current.minibus || 0) + (current.cable || 0);
     const totalPrevious = previous ? ((previous.bus || 0) + (previous.metro || 0) + (previous.minibus || 0) + (previous.cable || 0)) : 0;
@@ -258,15 +254,7 @@ function updateInsights(index) {
         const previousValue = previous ? (previous[mode] || 0) : 0;
         const change = previous ? calculateChange(currentValue, previousValue) : null;
 
-        // Calculate weekday/weekend comparison
-        let weekendChange = null;
-        if (weekdays.length > 0 && weekends.length > 0) {
-            const weekdayAvg = weekdays.reduce((sum, d) => sum + (d[mode] || 0), 0) / weekdays.length;
-            const weekendAvg = weekends.reduce((sum, d) => sum + (d[mode] || 0), 0) / weekends.length;
-            weekendChange = calculateChange(weekendAvg, weekdayAvg);
-        }
-
-        updateModeCard(mode, currentValue, change, weekendChange);
+        updateModeCard(mode, currentValue, change);
     });
 }
 
@@ -303,10 +291,9 @@ function updateTotalCard(total, change, date) {
     }
 }
 
-function updateModeCard(mode, value, change, weekendChange) {
+function updateModeCard(mode, value, change) {
     const valueElement = document.querySelector(`.${mode}-value`);
     const changeElement = document.querySelector(`.${mode}-change`);
-    const comparisonElement = document.querySelector(`.${mode}-comparison`);
 
     console.log(`updateModeCard for ${mode}:`, { value, change, valueElement, changeElement });
 
@@ -332,16 +319,6 @@ function updateModeCard(mode, value, change, weekendChange) {
             console.log(`${mode} change is null (first day)`);
         }
     }
-
-    if (comparisonElement && weekendChange !== null) {
-        const comparisonClass = getChangeClass(weekendChange);
-        const comparisonSymbol = getChangeSymbol(weekendChange);
-        
-        comparisonElement.className = `insight-comparison ${mode}-comparison ${comparisonClass}`;
-        comparisonElement.style.color = comparisonClass === 'change-positive' ? '#10b981' : 
-                                        comparisonClass === 'change-negative' ? '#ef4444' : '#6b7280';
-        comparisonElement.innerHTML = `${comparisonSymbol} ${Math.abs(weekendChange)}% weekend vs weekday`;
-    }
 }
 
 // ========== INSIGHTS CREATION ==========
@@ -350,9 +327,6 @@ function createInsights(data) {
 
     const latest = data[data.length - 1];
     const previous = data[data.length - 2];
-
-    const weekdays = data.filter(d => !['Saturday', 'Sunday'].includes(d.weekday) && !isHoliday(d.date));
-    const weekends = data.filter(d => ['Saturday', 'Sunday'].includes(d.weekday) || isHoliday(d.date));
 
     const totalLatest = (latest.bus || 0) + (latest.metro || 0) + 
                        (latest.minibus || 0) + (latest.cable || 0);
@@ -368,21 +342,6 @@ function createInsights(data) {
         const changeClass = getChangeClass(change);
         const changeSymbol = getChangeSymbol(change);
 
-        let comparisonHtml = '';
-        if (weekdays.length > 0 && weekends.length > 0) {
-            const weekdayAvg = weekdays.reduce((sum, d) => sum + (d[mode] || 0), 0) / weekdays.length;
-            const weekendAvg = weekends.reduce((sum, d) => sum + (d[mode] || 0), 0) / weekends.length;
-            const weekendChange = calculateChange(weekendAvg, weekdayAvg);
-            const comparisonClass = getChangeClass(weekendChange);
-            const comparisonSymbol = getChangeSymbol(weekendChange);
-
-            comparisonHtml = `
-                <div class="insight-comparison ${mode}-comparison ${comparisonClass}" style="color: ${comparisonClass === 'change-positive' ? '#10b981' : comparisonClass === 'change-negative' ? '#ef4444' : '#6b7280'};">
-                    ${comparisonSymbol} ${Math.abs(weekendChange)}% weekend vs weekday
-                </div>
-            `;
-        }
-
         return `
             <div class="insight-card">
                 <h3>${modeNames[mode]}</h3>
@@ -390,7 +349,6 @@ function createInsights(data) {
                 <div class="insight-change ${mode}-change ${changeClass}" style="color: ${changeClass === 'change-positive' ? '#10b981' : changeClass === 'change-negative' ? '#ef4444' : '#6b7280'};">
                     ${changeSymbol} ${Math.abs(change)}% vs prev. day
                 </div>
-                ${comparisonHtml}
             </div>
         `;
     }).join('');
