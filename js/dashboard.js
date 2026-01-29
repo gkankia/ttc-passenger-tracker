@@ -444,10 +444,10 @@ async function initDashboard() {
                     ${createInsights(data)}
                 </div>
 
-                <div class="map-section">
+                <!--<div class="map-section">
                     <h3>Transit Network Map</h3>
                     <div id="transit-map"></div>
-                </div>
+                </div>-->
             </div>
         </div>
 
