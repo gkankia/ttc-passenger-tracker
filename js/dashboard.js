@@ -100,7 +100,7 @@ function createChart(data) {
     const ctx = document.getElementById('passengerChart').getContext('2d');
     
     const labels = data.map(d => formatDate(d.date));
-    const dates = data.map(d => d.date); // Keep original dates for weekend detection
+    const dates = data.map(d => d.date);
 
     const datasets = [
         {
@@ -171,8 +171,8 @@ function createChart(data) {
                         }
                     }
                 },
-                weekendHighlight: {
-                    dates: dates // Pass original dates to the plugin
+                weekendHolidayHighlight: {
+                    dates: dates
                 }
             },
             scales: {
@@ -194,7 +194,7 @@ function createChart(data) {
                 }
             }
         },
-        plugins: [weekendHighlightPlugin]
+        plugins: [weekendHolidayHighlightPlugin]
     });
 }
 
