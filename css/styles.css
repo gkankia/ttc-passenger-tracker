@@ -80,19 +80,23 @@ h3 {
     flex-direction: row;
     gap: 15px;
     justify-content: center;
+    flex-wrap: nowrap; /* Prevent wrapping */
 }
+
 
 .chart-legend-item {
     display: flex;
     align-items: center;
     gap: 8px;
     font-size: 0.85rem;
+    white-space: nowrap; /* Prevent text wrapping */
 }
 
 .chart-legend-color {
     width: 16px;
     height: 16px;
     border-radius: 3px;
+    flex-shrink: 0; /* Prevent color box from shrinking */
 }
 
 /* ========== INSIGHTS GRID ========== */

@@ -321,6 +321,14 @@ async function initDashboard() {
                         <div class="chart-legend-color" style="background: #8b5cf6;"></div>
                         <span>Cable</span>
                     </div>
+                    <div class="chart-legend-item" style="margin-left: 10px;">
+                        <div class="chart-legend-color" style="background: rgba(0, 0, 0, 0.1);"></div>
+                        <span>Weekend</span>
+                    </div>
+                    <div class="chart-legend-item">
+                        <div class="chart-legend-color" style="background: rgba(102, 126, 234, 0.2);"></div>
+                        <span>Holiday</span>
+                    </div>
                 </div>
                 <canvas id="passengerChart"></canvas>
             </div>
