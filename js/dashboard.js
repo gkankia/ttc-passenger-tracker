@@ -261,15 +261,10 @@ function updateInsights(index) {
 function updateTotalCard(total, change, date) {
     const valueElement = document.querySelector('.total-value');
     const changeElement = document.querySelector('.total-change');
-    const dateElement = document.querySelector('.total-date div');
 
     if (valueElement) {
         const oldValue = parseInt(valueElement.textContent.replace(/,/g, '')) || 0;
         animateNumber(valueElement, oldValue, total);
-    }
-
-    if (dateElement) {
-        dateElement.textContent = formatDate(date);
     }
 
     if (changeElement) {
@@ -355,18 +350,11 @@ function createInsights(data) {
 
     return `
         <div class="insight-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; position: relative;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                <div style="flex: 1;">
-                    <h3 style="color: rgba(255,255,255,0.9);">TOTAL PASSENGERS</h3>
-                    <div class="insight-value total-value" style="color: white;">${totalLatest.toLocaleString()}</div>
-                    <div class="insight-change total-change" style="color: rgba(255,255,255,0.9);">
-                        ${getChangeSymbol(totalChange)} ${Math.abs(totalChange)}% vs prev. day
-                        ${isHoliday(latest.date) ? ' 🎉 Public Holiday' : ''}
-                    </div>
-                </div>
-                <div class="total-date" style="background: rgba(255,255,255,0.2); border-radius: 8px; padding: 12px 16px; text-align: center; min-width: 80px;">
-                    <div style="font-size: 1.8em; font-weight: bold; line-height: 1; color: white;">${formatDate(latest.date)}</div>
-                </div>
+            <h3 style="color: rgba(255,255,255,0.9);">TOTAL PASSENGERS</h3>
+            <div class="insight-value total-value" style="color: white;">${totalLatest.toLocaleString()}</div>
+            <div class="insight-change total-change" style="color: rgba(255,255,255,0.9);">
+                ${getChangeSymbol(totalChange)} ${Math.abs(totalChange)}% vs prev. day
+                ${isHoliday(latest.date) ? ' 🎉 Public Holiday' : ''}
             </div>
         </div>
         ${cards}
@@ -402,6 +390,31 @@ async function initDashboard() {
     globalData = data; // Store globally for hover updates
 
     const html = `
+        <div class="info-bar">
+            <div class="last-update">
+                <span class="last-update-label">Last Update:</span>
+                <span class="last-update-value">${formatDate(data[data.length - 1].date)} • 03:00 AM</span>
+            </div>
+            <div class="info-actions">
+                <button class="info-button" id="methodButton">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    Method
+                </button>
+                <button class="info-button" id="downloadButton">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Download Data
+                </button>
+            </div>
+        </div>
+
         <div class="main-content">
             <div class="chart-container">
                 <div class="chart-legend">
@@ -438,6 +451,57 @@ async function initDashboard() {
             </div>
         </div>
 
+        <!-- Method Modal -->
+        <div class="modal" id="methodModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Methodology</h3>
+                    <button class="modal-close" id="closeMethodModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Data Source:</strong> Daily passenger counts are scraped from the Tbilisi Transport Company (TTC) official website at 3:00 AM local time.</p>
+                    <p><strong>Coverage:</strong> The data includes all four public transport modes in Tbilisi: buses, metro, minibuses (marshrutkas), and cable cars.</p>
+                    <p><strong>Update Frequency:</strong> Data is updated once daily, capturing the previous day's ridership totals.</p>
+                    <p><strong>Georgian Public Holidays:</strong> Official public holidays are marked on the chart and may show different ridership patterns.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Download Modal -->
+        <div class="modal" id="downloadModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Download Data</h3>
+                    <button class="modal-close" id="closeDownloadModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Download the complete dataset in your preferred format:</p>
+                    <div class="download-options">
+                        <button class="download-option" id="downloadJSON">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                            <div>
+                                <div class="download-format">JSON</div>
+                                <div class="download-description">Raw data format</div>
+                            </div>
+                        </button>
+                        <button class="download-option" id="downloadCSV">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                            <div>
+                                <div class="download-format">CSV</div>
+                                <div class="download-description">Excel compatible</div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="footer">
             <div class="footer-content">
                 Data Source:
@@ -459,6 +523,94 @@ async function initDashboard() {
     
     // Initialize insights with the last data point
     updateInsights(data.length - 1);
+    
+    // Setup modal event listeners
+    setupModalListeners(data);
+}
+
+// ========== MODAL AND DOWNLOAD HANDLERS ==========
+function setupModalListeners(data) {
+    // Method modal
+    const methodButton = document.getElementById('methodButton');
+    const methodModal = document.getElementById('methodModal');
+    const closeMethodModal = document.getElementById('closeMethodModal');
+    
+    methodButton.addEventListener('click', () => {
+        methodModal.style.display = 'flex';
+    });
+    
+    closeMethodModal.addEventListener('click', () => {
+        methodModal.style.display = 'none';
+    });
+    
+    // Download modal
+    const downloadButton = document.getElementById('downloadButton');
+    const downloadModal = document.getElementById('downloadModal');
+    const closeDownloadModal = document.getElementById('closeDownloadModal');
+    
+    downloadButton.addEventListener('click', () => {
+        downloadModal.style.display = 'flex';
+    });
+    
+    closeDownloadModal.addEventListener('click', () => {
+        downloadModal.style.display = 'none';
+    });
+    
+    // Close modals when clicking outside
+    window.addEventListener('click', (event) => {
+        if (event.target === methodModal) {
+            methodModal.style.display = 'none';
+        }
+        if (event.target === downloadModal) {
+            downloadModal.style.display = 'none';
+        }
+    });
+    
+    // Download handlers
+    document.getElementById('downloadJSON').addEventListener('click', () => {
+        downloadData(data, 'json');
+    });
+    
+    document.getElementById('downloadCSV').addEventListener('click', () => {
+        downloadData(data, 'csv');
+    });
+}
+
+function downloadData(data, format) {
+    let content, filename, mimeType;
+    
+    if (format === 'json') {
+        content = JSON.stringify(data, null, 2);
+        filename = 'tbilisi_transport_data.json';
+        mimeType = 'application/json';
+    } else if (format === 'csv') {
+        // Convert to CSV
+        const headers = ['date', 'weekday', 'bus', 'metro', 'minibus', 'cable'];
+        const csvRows = [headers.join(',')];
+        
+        data.forEach(row => {
+            const values = headers.map(header => row[header] || '');
+            csvRows.push(values.join(','));
+        });
+        
+        content = csvRows.join('\n');
+        filename = 'tbilisi_transport_data.csv';
+        mimeType = 'text/csv';
+    }
+    
+    // Create download link
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    // Close modal
+    document.getElementById('downloadModal').style.display = 'none';
 }
 
 // ========== START APPLICATION ==========

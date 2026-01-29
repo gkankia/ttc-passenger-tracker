@@ -53,6 +53,203 @@ h3 {
     box-shadow: 0 20px 60px rgba(130, 129, 129, 0.3);
 }
 
+/* ========== INFO BAR ========== */
+.info-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8edf3 100%);
+    border-radius: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.last-update {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+}
+
+.last-update-label {
+    color: #666;
+    font-weight: 500;
+}
+
+.last-update-value {
+    color: #333;
+    font-weight: 600;
+}
+
+.info-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.info-button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-family: "Fira Mono", monospace;
+    font-size: 0.85rem;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.info-button:hover {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+.info-button svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* ========== MODALS ========== */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 30px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    color: #333;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #666;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.modal-close:hover {
+    background: #f3f4f6;
+    color: #333;
+}
+
+.modal-body {
+    padding: 24px 30px;
+}
+
+.modal-body p {
+    margin-bottom: 16px;
+    line-height: 1.6;
+    color: #555;
+}
+
+.modal-body p:last-child {
+    margin-bottom: 0;
+}
+
+.modal-body strong {
+    color: #333;
+}
+
+.download-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.download-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8edf3 100%);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    font-family: "Fira Mono", monospace;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.download-option:hover {
+    border-color: #667eea;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.download-option svg {
+    flex-shrink: 0;
+}
+
+.download-option:hover svg {
+    stroke: white;
+}
+
+.download-format {
+    font-weight: 600;
+    font-size: 1rem;
+    text-align: left;
+}
+
+.download-description {
+    font-size: 0.75rem;
+    opacity: 0.8;
+    text-align: left;
+}
+
 .main-content {
     display: flex;
     flex-direction: column;
@@ -221,6 +418,24 @@ h3 {
         padding: 20px;
     }
 
+    .info-bar {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 15px;
+    }
+
+    .last-update {
+        justify-content: center;
+    }
+
+    .info-actions {
+        flex-direction: column;
+    }
+
+    .info-button {
+        justify-content: center;
+    }
+
     .chart-container {
         height: 350px;
         padding-bottom: 60px;
@@ -243,5 +458,22 @@ h3 {
     
     .insight-card:first-child {
         grid-column: 1;
+    }
+
+    .modal-content {
+        width: 95%;
+        max-height: 90vh;
+    }
+
+    .modal-header {
+        padding: 20px;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .download-options {
+        grid-template-columns: 1fr;
     }
 }
