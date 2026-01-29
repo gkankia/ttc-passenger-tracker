@@ -76,17 +76,17 @@ const weekendHolidayHighlightPlugin = {
             const dayOfWeek = date.getDay();
             
             // Check if it's a weekend
-            const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+            const isWeekendDay = dayOfWeek === 0 || dayOfWeek === 6;
             
-            // Check if it's a holiday
-            const isHoliday = isHoliday(dateStr);
+            // Check if it's a holiday (use the function name)
+            const isHolidayDay = GEORGIAN_HOLIDAYS.includes(dateStr);
             
-            if (isWeekend || isHoliday) {
+            if (isWeekendDay || isHolidayDay) {
                 const xPos = x.getPixelForValue(index);
                 const barWidth = x.width / data.length;
                 
                 // Different colors for holidays vs weekends
-                if (isHoliday && !isWeekend) {
+                if (isHolidayDay && !isWeekendDay) {
                     // Holidays that aren't weekends - slightly more visible
                     ctx.fillStyle = 'rgba(102, 126, 234, 0.08)'; // Light purple/blue
                 } else {
