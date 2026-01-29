@@ -14,6 +14,9 @@ const GEORGIAN_HOLIDAYS = [
     '26.05.2026', '28.08.2026', '14.10.2026', '23.11.2026'
 ];
 
+// Global data reference
+let globalData = [];
+
 // ========== DATA LOADING ==========
 async function loadData() {
     try {
@@ -59,6 +62,29 @@ function getChangeSymbol(change) {
     return '→';
 }
 
+// ========== NUMBER ANIMATION ==========
+function animateNumber(element, start, end, duration = 500) {
+    const startTime = performance.now();
+    const difference = end - start;
+    
+    function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Easing function for smooth animation
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        const current = Math.round(start + (difference * easeOut));
+        
+        element.textContent = current.toLocaleString();
+        
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        }
+    }
+    
+    requestAnimationFrame(update);
+}
+
 // ========== CHART PLUGIN FOR WEEKEND AND HOLIDAY HIGHLIGHTING ==========
 const weekendHolidayHighlightPlugin = {
     id: 'weekendHolidayHighlight',
@@ -75,23 +101,17 @@ const weekendHolidayHighlightPlugin = {
             const date = parseDate(dateStr);
             const dayOfWeek = date.getDay();
             
-            // Check if it's a weekend
             const isWeekendDay = dayOfWeek === 0 || dayOfWeek === 6;
-            
-            // Check if it's a holiday (use the function name)
             const isHolidayDay = GEORGIAN_HOLIDAYS.includes(dateStr);
             
             if (isWeekendDay || isHolidayDay) {
                 const xPos = x.getPixelForValue(index);
                 const barWidth = x.width / data.length;
                 
-                // Different colors for holidays vs weekends
                 if (isHolidayDay && !isWeekendDay) {
-                    // Holidays that aren't weekends - slightly more visible
-                    ctx.fillStyle = 'rgba(102, 126, 234, 0.08)'; // Light purple/blue
+                    ctx.fillStyle = 'rgba(102, 126, 234, 0.08)';
                 } else {
-                    // Weekends (and holidays that fall on weekends)
-                    ctx.fillStyle = 'rgba(0, 0, 0, 0.03)'; // Light grey
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.03)';
                 }
                 
                 ctx.fillRect(
@@ -157,7 +177,7 @@ function createChart(data) {
         }
     ];
 
-    new Chart(ctx, {
+    const chart = new Chart(ctx, {
         type: 'line',
         data: { labels, datasets },
         options: {
@@ -172,16 +192,7 @@ function createChart(data) {
                     display: false
                 },
                 tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    padding: 12,
-                    titleFont: { size: 14 },
-                    bodyFont: { size: 13 },
-                    callbacks: {
-                        label: function(context) {
-                            return context.dataset.label + ': ' + 
-                                   context.parsed.y.toLocaleString() + ' passengers';
-                        }
-                    }
+                    enabled: false // Disable tooltip
                 },
                 weekendHolidayHighlight: {
                     dates: dates
@@ -204,10 +215,104 @@ function createChart(data) {
                         display: false
                     }
                 }
+            },
+            onHover: (event, activeElements) => {
+                if (activeElements.length > 0) {
+                    const index = activeElements[0].index;
+                    updateInsights(index);
+                }
             }
         },
         plugins: [weekendHolidayHighlightPlugin]
     });
+
+    // Set canvas cursor to pointer
+    ctx.canvas.style.cursor = 'pointer';
+}
+
+// ========== UPDATE INSIGHTS ON HOVER ==========
+function updateInsights(index) {
+    if (index < 0 || index >= globalData.length) return;
+
+    const current = globalData[index];
+    const previous = index > 0 ? globalData[index - 1] : null;
+
+    // Calculate weekday/weekend averages (all data)
+    const weekdays = globalData.filter(d => !['Saturday', 'Sunday'].includes(d.weekday) && !isHoliday(d.date));
+    const weekends = globalData.filter(d => ['Saturday', 'Sunday'].includes(d.weekday) || isHoliday(d.date));
+
+    // Update total
+    const totalCurrent = (current.bus || 0) + (current.metro || 0) + (current.minibus || 0) + (current.cable || 0);
+    const totalPrevious = previous ? ((previous.bus || 0) + (previous.metro || 0) + (previous.minibus || 0) + (previous.cable || 0)) : 0;
+    const totalChange = previous ? calculateChange(totalCurrent, totalPrevious) : null;
+
+    updateTotalCard(totalCurrent, totalChange, current.date);
+
+    // Update mode cards
+    const modes = ['bus', 'metro', 'minibus', 'cable'];
+    modes.forEach(mode => {
+        const currentValue = current[mode] || 0;
+        const previousValue = previous ? (previous[mode] || 0) : 0;
+        const change = previous ? calculateChange(currentValue, previousValue) : null;
+
+        // Calculate weekday/weekend comparison
+        let weekendChange = null;
+        if (weekdays.length > 0 && weekends.length > 0) {
+            const weekdayAvg = weekdays.reduce((sum, d) => sum + (d[mode] || 0), 0) / weekdays.length;
+            const weekendAvg = weekends.reduce((sum, d) => sum + (d[mode] || 0), 0) / weekends.length;
+            weekendChange = calculateChange(weekendAvg, weekdayAvg);
+        }
+
+        updateModeCard(mode, currentValue, change, weekendChange);
+    });
+}
+
+function updateTotalCard(total, change, date) {
+    const valueElement = document.querySelector('.total-value');
+    const changeElement = document.querySelector('.total-change');
+
+    if (valueElement) {
+        const oldValue = parseInt(valueElement.textContent.replace(/,/g, '')) || 0;
+        animateNumber(valueElement, oldValue, total);
+    }
+
+    if (changeElement && change !== null) {
+        const changeClass = getChangeClass(change);
+        const changeSymbol = getChangeSymbol(change);
+        const holidayBadge = isHoliday(date) ? '🎉 Public Holiday' : '';
+        
+        changeElement.className = `insight-change ${changeClass}`;
+        changeElement.style.color = changeClass === 'change-positive' ? '#10b981' : 
+                                    changeClass === 'change-negative' ? '#ef4444' : '#6b7280';
+        changeElement.innerHTML = `${changeSymbol} ${Math.abs(change)}% vs yesterday ${holidayBadge}`;
+    }
+}
+
+function updateModeCard(mode, value, change, weekendChange) {
+    const valueElement = document.querySelector(`.${mode}-value`);
+    const changeElement = document.querySelector(`.${mode}-change`);
+    const comparisonElement = document.querySelector(`.${mode}-comparison`);
+
+    if (valueElement) {
+        const oldValue = parseInt(valueElement.textContent.replace(/,/g, '')) || 0;
+        animateNumber(valueElement, oldValue, value);
+    }
+
+    if (changeElement && change !== null) {
+        const changeClass = getChangeClass(change);
+        const changeSymbol = getChangeSymbol(change);
+        
+        changeElement.className = `insight-change ${changeClass}`;
+        changeElement.innerHTML = `${changeSymbol} ${Math.abs(change)}% vs yesterday`;
+    }
+
+    if (comparisonElement && weekendChange !== null) {
+        const comparisonClass = getChangeClass(weekendChange);
+        const comparisonSymbol = getChangeSymbol(weekendChange);
+        
+        comparisonElement.className = `insight-comparison ${comparisonClass}`;
+        comparisonElement.innerHTML = `${comparisonSymbol} ${Math.abs(weekendChange)}% weekend vs weekday`;
+    }
 }
 
 // ========== INSIGHTS CREATION ==========
@@ -243,7 +348,7 @@ function createInsights(data) {
             const comparisonSymbol = getChangeSymbol(weekendChange);
 
             comparisonHtml = `
-                <div class="insight-comparison ${comparisonClass}">
+                <div class="insight-comparison ${mode}-comparison ${comparisonClass}">
                     ${comparisonSymbol} ${Math.abs(weekendChange)}% weekend vs weekday
                 </div>
             `;
@@ -252,8 +357,8 @@ function createInsights(data) {
         return `
             <div class="insight-card">
                 <h3>${modeNames[mode]}</h3>
-                <div class="insight-value">${(latest[mode] || 0).toLocaleString()}</div>
-                <div class="insight-change ${changeClass}">
+                <div class="insight-value ${mode}-value">${(latest[mode] || 0).toLocaleString()}</div>
+                <div class="insight-change ${mode}-change ${changeClass}">
                     ${changeSymbol} ${Math.abs(change)}% vs yesterday
                 </div>
                 ${comparisonHtml}
@@ -264,8 +369,8 @@ function createInsights(data) {
     return `
         <div class="insight-card" style="grid-column: 1 / -1; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
             <h3 style="color: rgba(255,255,255,0.9);">TOTAL PASSENGERS</h3>
-            <div class="insight-value" style="color: white;">${totalLatest.toLocaleString()}</div>
-            <div class="insight-change" style="color: rgba(255,255,255,0.9);">
+            <div class="insight-value total-value" style="color: white;">${totalLatest.toLocaleString()}</div>
+            <div class="insight-change total-change" style="color: rgba(255,255,255,0.9);">
                 ${getChangeSymbol(totalChange)} ${Math.abs(totalChange)}% vs yesterday
                 ${isHoliday(latest.date) ? '🎉 Public Holiday' : ''}
             </div>
@@ -300,6 +405,7 @@ async function initDashboard() {
     }
 
     data.sort((a, b) => parseDate(a.date) - parseDate(b.date));
+    globalData = data; // Store globally for hover updates
 
     const html = `
         <div class="main-content">
@@ -339,8 +445,8 @@ async function initDashboard() {
                 </div>
 
                 <div class="map-section">
-                    <!--<h3>Transit Network Map</h3>-->
-                    <!--<div id="transit-map"></div>-->
+                    <h3>Transit Network Map</h3>
+                    <div id="transit-map"></div>
                 </div>
             </div>
         </div>
