@@ -189,7 +189,7 @@ function createChart(data) {
                     display: false
                 },
                 tooltip: {
-                    enabled: false // Disable tooltip
+                    enabled: false
                 },
                 weekendHolidayHighlight: {
                     dates: dates
@@ -214,6 +214,7 @@ function createChart(data) {
                 }
             },
             onHover: (event, activeElements) => {
+                console.log('Chart onHover fired, activeElements:', activeElements.length);
                 if (activeElements.length > 0) {
                     const index = activeElements[0].index;
                     updateInsights(index);
@@ -225,9 +226,12 @@ function createChart(data) {
 
     // Add direct mouse event listener as backup
     ctx.canvas.addEventListener('mousemove', (e) => {
+        console.log('MOUSEMOVE EVENT FIRED');
         const points = chart.getElementsAtEventForMode(e, 'index', { intersect: false }, false);
+        console.log('Points found:', points.length);
         if (points.length > 0) {
             const index = points[0].index;
+            console.log('Calling updateInsights with index:', index);
             updateInsights(index);
         }
     });
@@ -238,14 +242,14 @@ function createChart(data) {
 
 // ========== UPDATE INSIGHTS ON HOVER ==========
 function updateInsights(index) {
-    console.log('updateInsights called with index:', index); // DEBUG
+    console.log('updateInsights called with index:', index);
     
     if (index < 0 || index >= globalData.length) return;
 
     const current = globalData[index];
     const previous = index > 0 ? globalData[index - 1] : null;
 
-    console.log('Current date:', current.date, 'Previous date:', previous ? previous.date : 'none'); // DEBUG
+    console.log('Current date:', current.date, 'Previous date:', previous ? previous.date : 'none');
 
     // Calculate weekday/weekend averages (all data)
     const weekdays = globalData.filter(d => !['Saturday', 'Sunday'].includes(d.weekday) && !isHoliday(d.date));
@@ -256,7 +260,7 @@ function updateInsights(index) {
     const totalPrevious = previous ? ((previous.bus || 0) + (previous.metro || 0) + (previous.minibus || 0) + (previous.cable || 0)) : 0;
     const totalChange = previous ? calculateChange(totalCurrent, totalPrevious) : null;
 
-    console.log('Total change:', totalChange); // DEBUG
+    console.log('Total change:', totalChange);
 
     updateTotalCard(totalCurrent, totalChange, current.date);
 
@@ -280,12 +284,12 @@ function updateInsights(index) {
 }
 
 function updateTotalCard(total, change, date) {
-    console.log('updateTotalCard called - total:', total, 'change:', change, 'date:', date); // DEBUG
+    console.log('updateTotalCard called - total:', total, 'change:', change, 'date:', date);
     
     const valueElement = document.querySelector('.total-value');
     const changeElement = document.querySelector('.total-change');
 
-    console.log('valueElement:', valueElement, 'changeElement:', changeElement); // DEBUG
+    console.log('valueElement:', valueElement, 'changeElement:', changeElement);
 
     if (valueElement) {
         const oldValue = parseInt(valueElement.textContent.replace(/,/g, '')) || 0;
@@ -303,9 +307,8 @@ function updateTotalCard(total, change, date) {
                                         changeClass === 'change-negative' ? '#ef4444' : '#6b7280';
             changeElement.innerHTML = `${changeSymbol} ${Math.abs(change)}% vs yesterday${holidayBadge}`;
             
-            console.log('Updated changeElement innerHTML to:', changeElement.innerHTML); // DEBUG
+            console.log('Updated changeElement innerHTML to:', changeElement.innerHTML);
         } else {
-            // First day - hide or show placeholder
             changeElement.className = 'insight-change';
             changeElement.style.color = '#6b7280';
             changeElement.innerHTML = '—';
@@ -333,7 +336,6 @@ function updateModeCard(mode, value, change, weekendChange) {
                                         changeClass === 'change-negative' ? '#ef4444' : '#6b7280';
             changeElement.innerHTML = `${changeSymbol} ${Math.abs(change)}% vs yesterday`;
         } else {
-            // First day - show placeholder
             changeElement.className = 'insight-change';
             changeElement.style.color = '#6b7280';
             changeElement.innerHTML = '—';
@@ -350,7 +352,6 @@ function updateModeCard(mode, value, change, weekendChange) {
                                             comparisonClass === 'change-negative' ? '#ef4444' : '#6b7280';
             comparisonElement.innerHTML = `${comparisonSymbol} ${Math.abs(weekendChange)}% weekend vs weekday`;
         } else {
-            // Not enough data for comparison
             comparisonElement.className = 'insight-comparison';
             comparisonElement.style.color = '#6b7280';
             comparisonElement.innerHTML = '—';
@@ -470,11 +471,6 @@ async function initDashboard() {
                 <div class="insights-grid">
                     ${createInsights(data)}
                 </div>
-
-                <!--<div class="map-section">
-                    <h3>Transit Network Map</h3>
-                    <div id="transit-map"></div>
-                </div>-->
             </div>
         </div>
 
