@@ -271,7 +271,7 @@ function updateTotalCard(total, change, date) {
         if (change !== null) {
             const changeClass = getChangeClass(change);
             const changeSymbol = getChangeSymbol(change);
-            const holidayBadge = isHoliday(date) ? '' : '';
+            const holidayBadge = isHoliday(date) ? ' 🎉 Public Holiday' : '';
             
             changeElement.className = `insight-change total-change ${changeClass}`;
             changeElement.style.color = changeClass === 'change-positive' ? 'rgba(255,255,255,0.9)' : 
@@ -390,31 +390,6 @@ async function initDashboard() {
     globalData = data; // Store globally for hover updates
 
     const html = `
-        <div class="info-bar">
-            <div class="last-update">
-                <span class="last-update-label">Last Update:</span>
-                <span class="last-update-value">${formatDate(data[data.length - 1].date)} • 03:00 AM</span>
-            </div>
-            <div class="info-actions">
-                <button class="info-button" id="methodButton">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="12" y1="16" x2="12" y2="12"></line>
-                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                    </svg>
-                    Method
-                </button>
-                <button class="info-button" id="downloadButton">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="7 10 12 15 17 10"></polyline>
-                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                    </svg>
-                    Download Data
-                </button>
-            </div>
-        </div>
-
         <div class="main-content">
             <div class="chart-container">
                 <div class="chart-legend">
@@ -469,6 +444,31 @@ async function initDashboard() {
         </div>
 
         <div class="footer">
+            <div class="footer-top">
+                <div class="last-update">
+                    <span class="last-update-label">Last Update:</span>
+                    <span class="last-update-value">${formatDate(data[data.length - 1].date)} • 03:00 AM</span>
+                </div>
+                <div class="footer-actions">
+                    <button class="footer-button" id="methodButton">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                        Method
+                    </button>
+                    <button class="footer-button" id="downloadButton">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Download Data
+                    </button>
+                </div>
+            </div>
+            
             <div class="footer-content">
                 Data Source:
                 <a href="https://ttc.com.ge" target="_blank" rel="noopener">Tbilisi Transport Company</a>

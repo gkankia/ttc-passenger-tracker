@@ -53,65 +53,100 @@ h3 {
     box-shadow: 0 20px 60px rgba(130, 129, 129, 0.3);
 }
 
-/* ========== INFO BAR ========== */
-.info-bar {
+.main-content {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 20px;
-    background: linear-gradient(135deg, #f5f7fa 0%, #e8edf3 100%);
-    border-radius: 12px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-    gap: 15px;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 30px;
 }
 
-.last-update {
+/* ========== CHART SECTION ========== */
+.chart-container {
+    position: relative;
+    height: 450px;
+    padding-bottom: 50px;
+    width: 100%;
+}
+
+.chart-legend {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+    padding: 10px 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    z-index: 10;
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: nowrap;
+}
+
+.chart-legend-item {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 0.9rem;
-}
-
-.last-update-label {
-    color: #666;
-    font-weight: 500;
-}
-
-.last-update-value {
-    color: #333;
-    font-weight: 600;
-}
-
-.info-actions {
-    display: flex;
-    gap: 10px;
-}
-
-.info-button {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
-    background: white;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    font-family: "Fira Mono", monospace;
     font-size: 0.85rem;
-    color: #333;
-    cursor: pointer;
-    transition: all 0.2s;
+    white-space: nowrap;
 }
 
-.info-button:hover {
-    background: #667eea;
-    color: white;
-    border-color: #667eea;
-}
-
-.info-button svg {
+.chart-legend-color {
     width: 16px;
     height: 16px;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+
+/* ========== INSIGHTS GRID ========== */
+.insights-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 15px;
+    width: 100%;
+}
+
+.insight-card {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.insight-card h3 {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.insight-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.insight-change {
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.change-positive {
+    color: #10b981;
+}
+
+.change-negative {
+    color: #ef4444;
+}
+
+.change-neutral {
+    color: #6b7280;
 }
 
 /* ========== MODALS ========== */
@@ -218,108 +253,71 @@ h3 {
     color: #333;
 }
 
-.main-content {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    margin-bottom: 30px;
-}
-
-/* ========== CHART SECTION ========== */
-.chart-container {
-    position: relative;
-    height: 450px;
-    padding-bottom: 50px;
-    width: 100%;
-}
-
-.chart-legend {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 8px;
-    padding: 10px 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    z-index: 10;
-    display: flex;
-    flex-direction: row;
-    gap: 15px;
-    justify-content: center;
-    flex-wrap: nowrap;
-}
-
-.chart-legend-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.85rem;
-    white-space: nowrap;
-}
-
-.chart-legend-color {
-    width: 16px;
-    height: 16px;
-    border-radius: 3px;
-    flex-shrink: 0;
-}
-
-/* ========== INSIGHTS GRID ========== */
-.insights-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 15px;
-    width: 100%;
-}
-
-.insight-card {
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-
-.insight-card h3 {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #666;
-    margin-bottom: 10px;
-}
-
-.insight-value {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 5px;
-}
-
-.insight-change {
-    font-size: 0.85rem;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.change-positive {
-    color: #10b981;
-}
-
-.change-negative {
-    color: #ef4444;
-}
-
-.change-neutral {
-    color: #6b7280;
-}
-
 /* ========== FOOTER ========== */
 .footer {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 12px;
+}
+
+.footer-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e5e7eb;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.last-update {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+}
+
+.last-update-label {
+    color: #666;
+    font-weight: 500;
+}
+
+.last-update-value {
+    color: #333;
+    font-weight: 600;
+}
+
+.footer-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.footer-button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-family: "Fira Mono", monospace;
+    font-size: 0.8rem;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.footer-button:hover {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+.footer-button svg {
+    width: 14px;
+    height: 14px;
 }
 
 .footer-content {
@@ -386,21 +384,21 @@ h3 {
         padding: 20px;
     }
 
-    .info-bar {
+    .footer-top {
         flex-direction: column;
         align-items: stretch;
-        padding: 15px;
+        gap: 12px;
     }
 
     .last-update {
         justify-content: center;
     }
 
-    .info-actions {
+    .footer-actions {
         flex-direction: column;
     }
 
-    .info-button {
+    .footer-button {
         justify-content: center;
     }
 
