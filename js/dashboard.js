@@ -276,15 +276,22 @@ function updateTotalCard(total, change, date) {
         animateNumber(valueElement, oldValue, total);
     }
 
-    if (changeElement && change !== null) {
-        const changeClass = getChangeClass(change);
-        const changeSymbol = getChangeSymbol(change);
-        const holidayBadge = isHoliday(date) ? ' 🎉 Public Holiday' : '';
-        
-        changeElement.className = `insight-change ${changeClass}`;
-        changeElement.style.color = changeClass === 'change-positive' ? '#10b981' : 
-                                    changeClass === 'change-negative' ? '#ef4444' : '#6b7280';
-        changeElement.innerHTML = `${changeSymbol} ${Math.abs(change)}% vs yesterday${holidayBadge}`;
+    if (changeElement) {
+        if (change !== null) {
+            const changeClass = getChangeClass(change);
+            const changeSymbol = getChangeSymbol(change);
+            const holidayBadge = isHoliday(date) ? ' 🎉 Public Holiday' : '';
+            
+            changeElement.className = `insight-change ${changeClass}`;
+            changeElement.style.color = changeClass === 'change-positive' ? '#10b981' : 
+                                        changeClass === 'change-negative' ? '#ef4444' : '#6b7280';
+            changeElement.innerHTML = `${changeSymbol} ${Math.abs(change)}% vs yesterday${holidayBadge}`;
+        } else {
+            // First day - hide or show placeholder
+            changeElement.className = 'insight-change';
+            changeElement.style.color = '#6b7280';
+            changeElement.innerHTML = '—';
+        }
     }
 }
 
