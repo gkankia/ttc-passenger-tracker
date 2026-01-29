@@ -453,6 +453,7 @@ async function initDashboard() {
 
         <!-- Method Modal -->
         <div class="modal" id="methodModal">
+            <div class="modal-backdrop"></div>
             <div class="modal-content">
                 <div class="modal-header">
                     <h3>Methodology</h3>
@@ -463,41 +464,6 @@ async function initDashboard() {
                     <p><strong>Coverage:</strong> The data includes all four public transport modes in Tbilisi: buses, metro, minibuses (marshrutkas), and cable cars.</p>
                     <p><strong>Update Frequency:</strong> Data is updated once daily, capturing the previous day's ridership totals.</p>
                     <p><strong>Georgian Public Holidays:</strong> Official public holidays are marked on the chart and may show different ridership patterns.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Download Modal -->
-        <div class="modal" id="downloadModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>Download Data</h3>
-                    <button class="modal-close" id="closeDownloadModal">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <p>Download the complete dataset in your preferred format:</p>
-                    <div class="download-options">
-                        <button class="download-option" id="downloadJSON">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                <polyline points="14 2 14 8 20 8"></polyline>
-                            </svg>
-                            <div>
-                                <div class="download-format">JSON</div>
-                                <div class="download-description">Raw data format</div>
-                            </div>
-                        </button>
-                        <button class="download-option" id="downloadCSV">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                <polyline points="14 2 14 8 20 8"></polyline>
-                            </svg>
-                            <div>
-                                <div class="download-format">CSV</div>
-                                <div class="download-description">Excel compatible</div>
-                            </div>
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -543,60 +509,24 @@ function setupModalListeners(data) {
         methodModal.style.display = 'none';
     });
     
-    // Download modal
-    const downloadButton = document.getElementById('downloadButton');
-    const downloadModal = document.getElementById('downloadModal');
-    const closeDownloadModal = document.getElementById('closeDownloadModal');
-    
-    downloadButton.addEventListener('click', () => {
-        downloadModal.style.display = 'flex';
-    });
-    
-    closeDownloadModal.addEventListener('click', () => {
-        downloadModal.style.display = 'none';
-    });
-    
-    // Close modals when clicking outside
-    window.addEventListener('click', (event) => {
-        if (event.target === methodModal) {
+    // Close modal when clicking on backdrop
+    methodModal.addEventListener('click', (event) => {
+        if (event.target === methodModal || event.target.classList.contains('modal-backdrop')) {
             methodModal.style.display = 'none';
         }
-        if (event.target === downloadModal) {
-            downloadModal.style.display = 'none';
-        }
     });
     
-    // Download handlers
-    document.getElementById('downloadJSON').addEventListener('click', () => {
-        downloadData(data, 'json');
-    });
-    
-    document.getElementById('downloadCSV').addEventListener('click', () => {
-        downloadData(data, 'csv');
+    // Download button - direct JSON download
+    const downloadButton = document.getElementById('downloadButton');
+    downloadButton.addEventListener('click', () => {
+        downloadData(data);
     });
 }
 
-function downloadData(data, format) {
-    let content, filename, mimeType;
-    
-    if (format === 'json') {
-        content = JSON.stringify(data, null, 2);
-        filename = 'tbilisi_transport_data.json';
-        mimeType = 'application/json';
-    } else if (format === 'csv') {
-        // Convert to CSV
-        const headers = ['date', 'weekday', 'bus', 'metro', 'minibus', 'cable'];
-        const csvRows = [headers.join(',')];
-        
-        data.forEach(row => {
-            const values = headers.map(header => row[header] || '');
-            csvRows.push(values.join(','));
-        });
-        
-        content = csvRows.join('\n');
-        filename = 'tbilisi_transport_data.csv';
-        mimeType = 'text/csv';
-    }
+function downloadData(data) {
+    const content = JSON.stringify(data, null, 2);
+    const filename = 'tbilisi_transport_data.json';
+    const mimeType = 'application/json';
     
     // Create download link
     const blob = new Blob([content], { type: mimeType });
@@ -608,9 +538,6 @@ function downloadData(data, format) {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    
-    // Close modal
-    document.getElementById('downloadModal').style.display = 'none';
 }
 
 // ========== START APPLICATION ==========
