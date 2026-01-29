@@ -241,10 +241,14 @@ function createChart(data) {
 
 // ========== UPDATE INSIGHTS ON HOVER ==========
 function updateInsights(index) {
+    console.log('updateInsights called with index:', index); // DEBUG
+    
     if (index < 0 || index >= globalData.length) return;
 
     const current = globalData[index];
     const previous = index > 0 ? globalData[index - 1] : null;
+
+    console.log('Current date:', current.date, 'Previous date:', previous ? previous.date : 'none'); // DEBUG
 
     // Calculate weekday/weekend averages (all data)
     const weekdays = globalData.filter(d => !['Saturday', 'Sunday'].includes(d.weekday) && !isHoliday(d.date));
@@ -254,6 +258,8 @@ function updateInsights(index) {
     const totalCurrent = (current.bus || 0) + (current.metro || 0) + (current.minibus || 0) + (current.cable || 0);
     const totalPrevious = previous ? ((previous.bus || 0) + (previous.metro || 0) + (previous.minibus || 0) + (previous.cable || 0)) : 0;
     const totalChange = previous ? calculateChange(totalCurrent, totalPrevious) : null;
+
+    console.log('Total change:', totalChange); // DEBUG
 
     updateTotalCard(totalCurrent, totalChange, current.date);
 
@@ -277,8 +283,12 @@ function updateInsights(index) {
 }
 
 function updateTotalCard(total, change, date) {
+    console.log('updateTotalCard called - total:', total, 'change:', change, 'date:', date); // DEBUG
+    
     const valueElement = document.querySelector('.total-value');
     const changeElement = document.querySelector('.total-change');
+
+    console.log('valueElement:', valueElement, 'changeElement:', changeElement); // DEBUG
 
     if (valueElement) {
         const oldValue = parseInt(valueElement.textContent.replace(/,/g, '')) || 0;
@@ -295,6 +305,8 @@ function updateTotalCard(total, change, date) {
             changeElement.style.color = changeClass === 'change-positive' ? '#10b981' : 
                                         changeClass === 'change-negative' ? '#ef4444' : '#6b7280';
             changeElement.innerHTML = `${changeSymbol} ${Math.abs(change)}% vs yesterday${holidayBadge}`;
+            
+            console.log('Updated changeElement innerHTML to:', changeElement.innerHTML); // DEBUG
         } else {
             // First day - hide or show placeholder
             changeElement.className = 'insight-change';
