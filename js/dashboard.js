@@ -95,6 +95,54 @@ const weekendHighlightPlugin = {
     }
 };
 
+// ========== CHART PLUGIN FOR WEEKEND AND HOLIDAY HIGHLIGHTING ==========
+const weekendHolidayHighlightPlugin = {
+    id: 'weekendHolidayHighlight',
+    beforeDatasetsDraw(chart) {
+        const { ctx, chartArea: { left, right, top, bottom }, scales: { x, y } } = chart;
+        
+        ctx.save();
+        
+        const data = chart.data.labels;
+        const dates = chart.config.options.plugins.weekendHolidayHighlight.dates;
+        
+        data.forEach((label, index) => {
+            const dateStr = dates[index];
+            const date = parseDate(dateStr);
+            const dayOfWeek = date.getDay();
+            
+            // Check if it's a weekend
+            const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+            
+            // Check if it's a holiday
+            const isHoliday = isHoliday(dateStr);
+            
+            if (isWeekend || isHoliday) {
+                const xPos = x.getPixelForValue(index);
+                const barWidth = x.width / data.length;
+                
+                // Different colors for holidays vs weekends
+                if (isHoliday && !isWeekend) {
+                    // Holidays that aren't weekends - slightly more visible
+                    ctx.fillStyle = 'rgba(102, 126, 234, 0.08)'; // Light purple/blue
+                } else {
+                    // Weekends (and holidays that fall on weekends)
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.03)'; // Light grey
+                }
+                
+                ctx.fillRect(
+                    xPos - barWidth / 2,
+                    top,
+                    barWidth,
+                    bottom - top
+                );
+            }
+        });
+        
+        ctx.restore();
+    }
+};
+
 // ========== CHART CREATION ==========
 function createChart(data) {
     const ctx = document.getElementById('passengerChart').getContext('2d');
