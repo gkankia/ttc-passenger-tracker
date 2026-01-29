@@ -1,9 +1,6 @@
 // ========== CONFIGURATION ==========
 const CONFIG = {
-    MAPBOX_TOKEN: 'pk.eyJ1Ijoiam9yam9uZTkwIiwiYSI6ImNrZ3R6M2FvdTBwbmwycXBibGRqM2w2enYifQ.BxjvFSGqefuC9yFCrXC-nQ',
-    MAPBOX_STYLE: 'mapbox://styles/jorjone90/clplq461o00wy01o93mm76il6',
-    MAP_CENTER: [44.8271, 41.7151],
-    MAP_ZOOM: 12
+    // Configuration settings (mapbox removed)
 };
 
 // Georgian public holidays 2026
@@ -393,21 +390,21 @@ function createInsights(data) {
             const comparisonClass = getChangeClass(weekendChange);
             const comparisonSymbol = getChangeSymbol(weekendChange);
 
-            comparisonHtml = `
-                <div class="insight-comparison ${mode}-comparison ${comparisonClass}" style="color: ${comparisonClass === 'change-positive' ? '#10b981' : comparisonClass === 'change-negative' ? '#ef4444' : '#6b7280'};">
-                    ${comparisonSymbol} ${Math.abs(weekendChange)}% weekend vs weekday
-                </div>
-            `;
+            comparisonHtml = `${comparisonSymbol} ${Math.abs(weekendChange)}% weekend vs weekday`;
+        } else {
+            comparisonHtml = '—';
         }
 
         return `
             <div class="insight-card">
                 <h3>${modeNames[mode]}</h3>
                 <div class="insight-value ${mode}-value">${(latest[mode] || 0).toLocaleString()}</div>
-                <div class="insight-change ${mode}-change ${changeClass}" style="color: ${changeClass === 'change-positive' ? '#10b981' : changeClass === 'change-negative' ? '#ef4444' : '#6b7280'};">
+                <div class="insight-change ${mode}-change">
                     ${changeSymbol} ${Math.abs(change)}% vs yesterday
                 </div>
-                ${comparisonHtml}
+                <div class="insight-comparison ${mode}-comparison">
+                    ${comparisonHtml}
+                </div>
             </div>
         `;
     }).join('');
@@ -423,22 +420,6 @@ function createInsights(data) {
         </div>
         ${cards}
     `;
-}
-
-// ========== MAP INITIALIZATION ==========
-let map;
-
-function initTransitMap() {
-    mapboxgl.accessToken = CONFIG.MAPBOX_TOKEN;
-    
-    map = new mapboxgl.Map({
-        container: 'transit-map',
-        style: CONFIG.MAPBOX_STYLE,
-        center: CONFIG.MAP_CENTER,
-        zoom: CONFIG.MAP_ZOOM
-    });
-
-    console.log('Transit map initialized');
 }
 
 // ========== DASHBOARD INITIALIZATION ==========
@@ -514,7 +495,6 @@ async function initDashboard() {
 
     document.getElementById('dashboard').innerHTML = html;
     createChart(data);
-    initTransitMap();
 }
 
 // ========== START APPLICATION ==========
