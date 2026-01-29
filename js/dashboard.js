@@ -232,10 +232,13 @@ function createChart(data) {
 
 // ========== UPDATE INSIGHTS ON HOVER ==========
 function updateInsights(index) {
+    console.log('updateInsights called with index:', index);
     if (index < 0 || index >= globalData.length) return;
 
     const current = globalData[index];
     const previous = index > 0 ? globalData[index - 1] : null;
+    
+    console.log('Current date:', current.date, 'Current bus:', current.bus);
 
     // Calculate weekday/weekend averages (all data)
     const weekdays = globalData.filter(d => !['Saturday', 'Sunday'].includes(d.weekday) && !isHoliday(d.date));
@@ -270,7 +273,7 @@ function updateInsights(index) {
 function updateTotalCard(total, change, date) {
     const valueElement = document.querySelector('.total-value');
     const changeElement = document.querySelector('.total-change');
-    const dateElement = document.querySelector('.total-date');
+    const dateElement = document.querySelector('.total-date div');
 
     if (valueElement) {
         const oldValue = parseInt(valueElement.textContent.replace(/,/g, '')) || 0;
@@ -287,14 +290,14 @@ function updateTotalCard(total, change, date) {
             const changeSymbol = getChangeSymbol(change);
             const holidayBadge = isHoliday(date) ? ' 🎉 Public Holiday' : '';
             
-            changeElement.className = `insight-change ${changeClass}`;
-            changeElement.style.color = changeClass === 'change-positive' ? '#10b981' : 
-                                        changeClass === 'change-negative' ? '#ef4444' : '#6b7280';
+            changeElement.className = `insight-change total-change ${changeClass}`;
+            changeElement.style.color = changeClass === 'change-positive' ? 'rgba(255,255,255,0.9)' : 
+                                        changeClass === 'change-negative' ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.9)';
             changeElement.innerHTML = `${changeSymbol} ${Math.abs(change)}% vs prev. day${holidayBadge}`;
         } else {
             // First day - hide or show placeholder
-            changeElement.className = 'insight-change';
-            changeElement.style.color = '#6b7280';
+            changeElement.className = 'insight-change total-change';
+            changeElement.style.color = 'rgba(255,255,255,0.9)';
             changeElement.innerHTML = '—';
         }
     }
@@ -305,26 +308,36 @@ function updateModeCard(mode, value, change, weekendChange) {
     const changeElement = document.querySelector(`.${mode}-change`);
     const comparisonElement = document.querySelector(`.${mode}-comparison`);
 
+    console.log(`updateModeCard for ${mode}:`, { value, change, valueElement, changeElement });
+
     if (valueElement) {
         const oldValue = parseInt(valueElement.textContent.replace(/,/g, '')) || 0;
         animateNumber(valueElement, oldValue, value);
     }
 
-    if (changeElement && change !== null) {
-        const changeClass = getChangeClass(change);
-        const changeSymbol = getChangeSymbol(change);
-        
-        changeElement.className = `insight-change ${changeClass}`;
-        changeElement.style.color = changeClass === 'change-positive' ? '#10b981' : 
-                                    changeClass === 'change-negative' ? '#ef4444' : '#6b7280';
-        changeElement.innerHTML = `${changeSymbol} ${Math.abs(change)}% vs prev. day`;
+    if (changeElement) {
+        if (change !== null) {
+            const changeClass = getChangeClass(change);
+            const changeSymbol = getChangeSymbol(change);
+            
+            changeElement.className = `insight-change ${mode}-change ${changeClass}`;
+            changeElement.style.color = changeClass === 'change-positive' ? '#10b981' : 
+                                        changeClass === 'change-negative' ? '#ef4444' : '#6b7280';
+            changeElement.innerHTML = `${changeSymbol} ${Math.abs(change)}% vs prev. day`;
+            console.log(`Updated ${mode} change to: ${change}%`);
+        } else {
+            changeElement.className = `insight-change ${mode}-change`;
+            changeElement.style.color = '#6b7280';
+            changeElement.innerHTML = '—';
+            console.log(`${mode} change is null (first day)`);
+        }
     }
 
     if (comparisonElement && weekendChange !== null) {
         const comparisonClass = getChangeClass(weekendChange);
         const comparisonSymbol = getChangeSymbol(weekendChange);
         
-        comparisonElement.className = `insight-comparison ${comparisonClass}`;
+        comparisonElement.className = `insight-comparison ${mode}-comparison ${comparisonClass}`;
         comparisonElement.style.color = comparisonClass === 'change-positive' ? '#10b981' : 
                                         comparisonClass === 'change-negative' ? '#ef4444' : '#6b7280';
         comparisonElement.innerHTML = `${comparisonSymbol} ${Math.abs(weekendChange)}% weekend vs weekday`;
@@ -383,13 +396,19 @@ function createInsights(data) {
     }).join('');
 
     return `
-        <div class="insight-card" style="grid-column: 1 / -1; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-            <h3 style="color: rgba(255,255,255,0.9);">TOTAL PASSENGERS</h3>
-            <div class="insight-value total-value" style="color: white;">${totalLatest.toLocaleString()}</div>
-            <div class="total-date" style="color: rgba(255,255,255,0.8); font-size: 0.9em; margin-top: 4px;">${formatDate(latest.date)}</div>
-            <div class="insight-change total-change" style="color: rgba(255,255,255,0.9);">
-                ${getChangeSymbol(totalChange)} ${Math.abs(totalChange)}% vs prev. day
-                ${isHoliday(latest.date) ? ' 🎉 Public Holiday' : ''}
+        <div class="insight-card" style="grid-column: 1 / -1; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; position: relative;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div style="flex: 1;">
+                    <h3 style="color: rgba(255,255,255,0.9);">TOTAL PASSENGERS</h3>
+                    <div class="insight-value total-value" style="color: white;">${totalLatest.toLocaleString()}</div>
+                    <div class="insight-change total-change" style="color: rgba(255,255,255,0.9);">
+                        ${getChangeSymbol(totalChange)} ${Math.abs(totalChange)}% vs prev. day
+                        ${isHoliday(latest.date) ? ' 🎉 Public Holiday' : ''}
+                    </div>
+                </div>
+                <div class="total-date" style="background: rgba(255,255,255,0.2); border-radius: 8px; padding: 12px 16px; text-align: center; min-width: 80px;">
+                    <div style="font-size: 1.8em; font-weight: bold; line-height: 1; color: white;">${formatDate(latest.date)}</div>
+                </div>
             </div>
         </div>
         ${cards}
@@ -486,6 +505,9 @@ async function initDashboard() {
     document.getElementById('dashboard').innerHTML = html;
     createChart(data);
     initTransitMap();
+    
+    // Initialize insights with the last data point
+    updateInsights(data.length - 1);
 }
 
 // ========== START APPLICATION ==========
