@@ -276,15 +276,21 @@ function updateTotalCard(total, change, date) {
         animateNumber(valueElement, oldValue, total);
     }
 
-    if (changeElement && change !== null) {
-        const changeClass = getChangeClass(change);
-        const changeSymbol = getChangeSymbol(change);
-        const holidayBadge = isHoliday(date) ? '🎉 Public Holiday' : '';
-        
-        changeElement.className = `insight-change ${changeClass}`;
-        changeElement.style.color = changeClass === 'change-positive' ? '#10b981' : 
-                                    changeClass === 'change-negative' ? '#ef4444' : '#6b7280';
-        changeElement.innerHTML = `${changeSymbol} ${Math.abs(change)}% vs yesterday ${holidayBadge}`;
+    if (changeElement) {
+        if (change !== null) {
+            const changeClass = getChangeClass(change);
+            const changeSymbol = getChangeSymbol(change);
+            const holidayBadge = isHoliday(date) ? ' 🎉 Public Holiday' : '';
+            
+            changeElement.className = `insight-change ${changeClass}`;
+            changeElement.style.color = changeClass === 'change-positive' ? '#10b981' : 
+                                        changeClass === 'change-negative' ? '#ef4444' : '#6b7280';
+            changeElement.innerHTML = `${changeSymbol} ${Math.abs(change)}% vs yesterday${holidayBadge}`;
+        } else {
+            changeElement.className = 'insight-change';
+            changeElement.style.color = '#6b7280';
+            changeElement.innerHTML = 'First day (no comparison)';
+        }
     }
 }
 
@@ -298,20 +304,36 @@ function updateModeCard(mode, value, change, weekendChange) {
         animateNumber(valueElement, oldValue, value);
     }
 
-    if (changeElement && change !== null) {
-        const changeClass = getChangeClass(change);
-        const changeSymbol = getChangeSymbol(change);
-        
-        changeElement.className = `insight-change ${changeClass}`;
-        changeElement.innerHTML = `${changeSymbol} ${Math.abs(change)}% vs yesterday`;
+    if (changeElement) {
+        if (change !== null) {
+            const changeClass = getChangeClass(change);
+            const changeSymbol = getChangeSymbol(change);
+            
+            changeElement.className = `insight-change ${changeClass}`;
+            changeElement.style.color = changeClass === 'change-positive' ? '#10b981' : 
+                                        changeClass === 'change-negative' ? '#ef4444' : '#6b7280';
+            changeElement.innerHTML = `${changeSymbol} ${Math.abs(change)}% vs yesterday`;
+        } else {
+            changeElement.className = 'insight-change';
+            changeElement.style.color = '#6b7280';
+            changeElement.innerHTML = 'First day (no comparison)';
+        }
     }
 
-    if (comparisonElement && weekendChange !== null) {
-        const comparisonClass = getChangeClass(weekendChange);
-        const comparisonSymbol = getChangeSymbol(weekendChange);
-        
-        comparisonElement.className = `insight-comparison ${comparisonClass}`;
-        comparisonElement.innerHTML = `${comparisonSymbol} ${Math.abs(weekendChange)}% weekend vs weekday`;
+    if (comparisonElement) {
+        if (weekendChange !== null) {
+            const comparisonClass = getChangeClass(weekendChange);
+            const comparisonSymbol = getChangeSymbol(weekendChange);
+            
+            comparisonElement.className = `insight-comparison ${comparisonClass}`;
+            comparisonElement.style.color = comparisonClass === 'change-positive' ? '#10b981' : 
+                                            comparisonClass === 'change-negative' ? '#ef4444' : '#6b7280';
+            comparisonElement.innerHTML = `${comparisonSymbol} ${Math.abs(weekendChange)}% weekend vs weekday`;
+        } else {
+            comparisonElement.className = 'insight-comparison';
+            comparisonElement.style.color = '#6b7280';
+            comparisonElement.innerHTML = 'Calculating...';
+        }
     }
 }
 
@@ -348,7 +370,7 @@ function createInsights(data) {
             const comparisonSymbol = getChangeSymbol(weekendChange);
 
             comparisonHtml = `
-                <div class="insight-comparison ${mode}-comparison ${comparisonClass}">
+                <div class="insight-comparison ${mode}-comparison ${comparisonClass}" style="color: ${comparisonClass === 'change-positive' ? '#10b981' : comparisonClass === 'change-negative' ? '#ef4444' : '#6b7280'};">
                     ${comparisonSymbol} ${Math.abs(weekendChange)}% weekend vs weekday
                 </div>
             `;
@@ -358,7 +380,7 @@ function createInsights(data) {
             <div class="insight-card">
                 <h3>${modeNames[mode]}</h3>
                 <div class="insight-value ${mode}-value">${(latest[mode] || 0).toLocaleString()}</div>
-                <div class="insight-change ${mode}-change ${changeClass}">
+                <div class="insight-change ${mode}-change ${changeClass}" style="color: ${changeClass === 'change-positive' ? '#10b981' : changeClass === 'change-negative' ? '#ef4444' : '#6b7280'};">
                     ${changeSymbol} ${Math.abs(change)}% vs yesterday
                 </div>
                 ${comparisonHtml}
@@ -372,7 +394,7 @@ function createInsights(data) {
             <div class="insight-value total-value" style="color: white;">${totalLatest.toLocaleString()}</div>
             <div class="insight-change total-change" style="color: rgba(255,255,255,0.9);">
                 ${getChangeSymbol(totalChange)} ${Math.abs(totalChange)}% vs yesterday
-                ${isHoliday(latest.date) ? '🎉 Public Holiday' : ''}
+                ${isHoliday(latest.date) ? ' 🎉 Public Holiday' : ''}
             </div>
         </div>
         ${cards}
