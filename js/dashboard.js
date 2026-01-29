@@ -496,31 +496,50 @@ async function initDashboard() {
 
 // ========== MODAL AND DOWNLOAD HANDLERS ==========
 function setupModalListeners(data) {
+    console.log('Setting up modal listeners...');
+    
     // Method modal
     const methodButton = document.getElementById('methodButton');
     const methodModal = document.getElementById('methodModal');
     const closeMethodModal = document.getElementById('closeMethodModal');
     
-    methodButton.addEventListener('click', () => {
-        methodModal.style.display = 'flex';
-    });
+    console.log('Method button:', methodButton);
+    console.log('Method modal:', methodModal);
     
-    closeMethodModal.addEventListener('click', () => {
-        methodModal.style.display = 'none';
-    });
-    
-    // Close modal when clicking on backdrop
-    methodModal.addEventListener('click', (event) => {
-        if (event.target === methodModal || event.target.classList.contains('modal-backdrop')) {
+    if (methodButton && methodModal && closeMethodModal) {
+        methodButton.addEventListener('click', () => {
+            console.log('Method button clicked!');
+            methodModal.style.display = 'flex';
+        });
+        
+        closeMethodModal.addEventListener('click', () => {
+            console.log('Close modal clicked!');
             methodModal.style.display = 'none';
-        }
-    });
+        });
+        
+        // Close modal when clicking on backdrop
+        methodModal.addEventListener('click', (event) => {
+            if (event.target === methodModal || event.target.classList.contains('modal-backdrop')) {
+                console.log('Backdrop clicked!');
+                methodModal.style.display = 'none';
+            }
+        });
+    } else {
+        console.error('Modal elements not found:', { methodButton, methodModal, closeMethodModal });
+    }
     
     // Download button - direct JSON download
     const downloadButton = document.getElementById('downloadButton');
-    downloadButton.addEventListener('click', () => {
-        downloadData(data);
-    });
+    console.log('Download button:', downloadButton);
+    
+    if (downloadButton) {
+        downloadButton.addEventListener('click', () => {
+            console.log('Download button clicked!');
+            downloadData(data);
+        });
+    } else {
+        console.error('Download button not found');
+    }
 }
 
 function downloadData(data) {
