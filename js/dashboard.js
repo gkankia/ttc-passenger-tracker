@@ -59,42 +59,6 @@ function getChangeSymbol(change) {
     return '→';
 }
 
-// ========== CHART PLUGIN FOR WEEKEND HIGHLIGHTING ==========
-const weekendHighlightPlugin = {
-    id: 'weekendHighlight',
-    beforeDatasetsDraw(chart) {
-        const { ctx, chartArea: { left, right, top, bottom }, scales: { x, y } } = chart;
-        
-        ctx.save();
-        
-        // Get the data to check weekdays
-        const data = chart.data.labels;
-        
-        data.forEach((label, index) => {
-            // Parse the date from label (e.g., "Jan 17")
-            const dateStr = chart.config.options.plugins.weekendHighlight.dates[index];
-            const date = parseDate(dateStr);
-            const dayOfWeek = date.getDay();
-            
-            // Check if it's Saturday (6) or Sunday (0)
-            if (dayOfWeek === 0 || dayOfWeek === 6) {
-                const xPos = x.getPixelForValue(index);
-                const barWidth = x.width / data.length;
-                
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.03)';
-                ctx.fillRect(
-                    xPos - barWidth / 2,
-                    top,
-                    barWidth,
-                    bottom - top
-                );
-            }
-        });
-        
-        ctx.restore();
-    }
-};
-
 // ========== CHART PLUGIN FOR WEEKEND AND HOLIDAY HIGHLIGHTING ==========
 const weekendHolidayHighlightPlugin = {
     id: 'weekendHolidayHighlight',
