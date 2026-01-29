@@ -354,7 +354,7 @@ function createInsights(data) {
     }).join('');
 
     return `
-        <div class="insight-card" style="grid-column: 1 / -1; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; position: relative;">
+        <div class="insight-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; position: relative;">
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                 <div style="flex: 1;">
                     <h3 style="color: rgba(255,255,255,0.9);">TOTAL PASSENGERS</h3>
@@ -433,15 +433,8 @@ async function initDashboard() {
                 <canvas id="passengerChart"></canvas>
             </div>
 
-            <div class="right-column">
-                <div class="insights-grid">
-                    ${createInsights(data)}
-                </div>
-
-                <!--<div class="map-section">
-                    <h3>Transit Network Map</h3>
-                    <div id="transit-map"></div>
-                </div>-->
+            <div class="insights-grid">
+                ${createInsights(data)}
             </div>
         </div>
 
