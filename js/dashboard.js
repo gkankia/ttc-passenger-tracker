@@ -271,7 +271,7 @@ function updateTotalCard(total, change, date) {
         if (change !== null) {
             const changeClass = getChangeClass(change);
             const changeSymbol = getChangeSymbol(change);
-            const holidayBadge = isHoliday(date) ? ' 🎉 Public Holiday' : '';
+            const holidayBadge = isHoliday(date) ? '' : '';
             
             changeElement.className = `insight-change total-change ${changeClass}`;
             changeElement.style.color = changeClass === 'change-positive' ? 'rgba(255,255,255,0.9)' : 
