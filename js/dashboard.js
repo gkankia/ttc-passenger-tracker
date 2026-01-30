@@ -456,7 +456,7 @@ async function initDashboard() {
                             <line x1="12" y1="16" x2="12" y2="12"></line>
                             <line x1="12" y1="8" x2="12.01" y2="8"></line>
                         </svg>
-                        Method
+                        მეთოდი
                     </button>
                     <button class="footer-button" id="downloadButton">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -464,7 +464,7 @@ async function initDashboard() {
                             <polyline points="7 10 12 15 17 10"></polyline>
                             <line x1="12" y1="15" x2="12" y2="3"></line>
                         </svg>
-                        Download Data
+                        მონაცემების გადმოწერა
                     </button>
                 </div>
             </div>
