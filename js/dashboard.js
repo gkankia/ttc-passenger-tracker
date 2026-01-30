@@ -136,7 +136,7 @@ function createChart(data) {
 
     const datasets = [
         {
-            label: 'Bus',
+            label: 'ავტობუსი',
             data: data.map(d => d.bus),
             borderColor: '#3b82f6',
             backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -146,7 +146,7 @@ function createChart(data) {
             tension: 0.4
         },
         {
-            label: 'Metro',
+            label: 'მეტრო',
             data: data.map(d => d.metro),
             borderColor: '#10b981',
             backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -156,7 +156,7 @@ function createChart(data) {
             tension: 0.4
         },
         {
-            label: 'Minibus',
+            label: 'მიკროავტობუსი',
             data: data.map(d => d.minibus),
             borderColor: '#f59e0b',
             backgroundColor: 'rgba(245, 158, 11, 0.1)',
@@ -166,7 +166,7 @@ function createChart(data) {
             tension: 0.4
         },
         {
-            label: 'Cable',
+            label: 'საბაგირო',
             data: data.map(d => d.cable),
             borderColor: '#8b5cf6',
             backgroundColor: 'rgba(139, 92, 246, 0.1)',
@@ -446,7 +446,7 @@ async function initDashboard() {
         <div class="footer">
             <div class="footer-top">
                 <div class="last-update">
-                    <span class="last-update-label">Last Update:</span>
+                    <span class="last-update-label">ბოლო განახლება:</span>
                     <span class="last-update-value">${formatDate(data[data.length - 1].date)} • 03:00 AM</span>
                 </div>
                 <div class="footer-actions">
@@ -456,7 +456,7 @@ async function initDashboard() {
                             <line x1="12" y1="16" x2="12" y2="12"></line>
                             <line x1="12" y1="8" x2="12.01" y2="8"></line>
                         </svg>
-                        მეთოდი
+                        მეთოდოლოგია
                     </button>
                     <button class="footer-button" id="downloadButton">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
