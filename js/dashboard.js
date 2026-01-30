@@ -1,10 +1,4 @@
-// ========== CONFIGURATION ==========
-const CONFIG = {
-    MAPBOX_TOKEN: 'pk.eyJ1Ijoiam9yam9uZTkwIiwiYSI6ImNrZ3R6M2FvdTBwbmwycXBibGRqM2w2enYifQ.BxjvFSGqefuC9yFCrXC-nQ',
-    MAPBOX_STYLE: 'mapbox://styles/jorjone90/clplq461o00wy01o93mm76il6',
-    MAP_CENTER: [44.8271, 41.7151],
-    MAP_ZOOM: 12
-};
+
 
 // Georgian public holidays 2026
 const GEORGIAN_HOLIDAYS = [
@@ -271,7 +265,7 @@ function updateTotalCard(total, change, date) {
         if (change !== null) {
             const changeClass = getChangeClass(change);
             const changeSymbol = getChangeSymbol(change);
-            const holidayBadge = isHoliday(date) ? ' 🎉 Public Holiday' : '';
+            const holidayBadge = isHoliday(date) ? '' : '';
             
             changeElement.className = `insight-change total-change ${changeClass}`;
             changeElement.style.color = changeClass === 'change-positive' ? 'rgba(255,255,255,0.9)' : 
@@ -361,22 +355,6 @@ function createInsights(data) {
     `;
 }
 
-// ========== MAP INITIALIZATION ==========
-let map;
-
-function initTransitMap() {
-    mapboxgl.accessToken = CONFIG.MAPBOX_TOKEN;
-    
-    map = new mapboxgl.Map({
-        container: 'transit-map',
-        style: CONFIG.MAPBOX_STYLE,
-        center: CONFIG.MAP_CENTER,
-        zoom: CONFIG.MAP_ZOOM
-    });
-
-    console.log('Transit map initialized');
-}
-
 // ========== DASHBOARD INITIALIZATION ==========
 async function initDashboard() {
     console.log('=== DASHBOARD INIT STARTED ===');
@@ -449,17 +427,12 @@ async function initDashboard() {
         <div class="footer">
             <div class="footer-top">
                 <div class="last-update">
-                    <span class="last-update-label">Last Update:</span>
+                    <span class="last-update-label">ბოლო განახლება:</span>
                     <span class="last-update-value">${formatDate(data[data.length - 1].date)} • 03:00 AM</span>
                 </div>
                 <div class="footer-actions">
                     <button class="footer-button" onclick="openMethodModal()">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="12" y1="16" x2="12" y2="12"></line>
-                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                        </svg>
-                        Method
+                        მეთოდოლოგია
                     </button>
                     <button class="footer-button" onclick="downloadDataFile()">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -467,7 +440,7 @@ async function initDashboard() {
                             <polyline points="7 10 12 15 17 10"></polyline>
                             <line x1="12" y1="15" x2="12" y2="3"></line>
                         </svg>
-                        Download Data
+                        მონაცემების გადმოწერა
                     </button>
                 </div>
             </div>

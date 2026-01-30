@@ -327,6 +327,7 @@ h3 {
     justify-content: center;
     gap: 15px;
     flex-wrap: wrap;
+    font-size: 10px;
 }
 
 .footer-logo-wrapper {
