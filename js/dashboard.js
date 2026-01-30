@@ -354,7 +354,7 @@ function createInsights(data) {
             <div class="insight-value total-value" style="color: white;">${totalLatest.toLocaleString()}</div>
             <div class="insight-change total-change" style="color: rgba(255,255,255,0.9);">
                 ${getChangeSymbol(totalChange)} ${Math.abs(totalChange)}% vs prev. day
-                ${isHoliday(latest.date) ? ' 🎉 Public Holiday' : ''}
+                ${isHoliday(latest.date) ? '' : ''}
             </div>
         </div>
         ${cards}
