@@ -430,12 +430,12 @@ async function initDashboard() {
         </div>
 
         <!-- Method Modal -->
-        <div class="modal" id="methodModal">
+        <div class="modal" id="methodModal" onclick="if(event.target === this || event.target.classList.contains('modal-backdrop')) closeMethodModal()">
             <div class="modal-backdrop"></div>
             <div class="modal-content">
                 <div class="modal-header">
                     <h3>Methodology</h3>
-                    <button class="modal-close" id="closeMethodModal">&times;</button>
+                    <button class="modal-close" onclick="closeMethodModal()">&times;</button>
                 </div>
                 <div class="modal-body">
                     <p><strong>Data Source:</strong> Daily passenger counts are scraped from the Tbilisi Transport Company (TTC) official website at 3:00 AM local time.</p>
@@ -453,7 +453,7 @@ async function initDashboard() {
                     <span class="last-update-value">${formatDate(data[data.length - 1].date)} • 03:00 AM</span>
                 </div>
                 <div class="footer-actions">
-                    <button class="footer-button" id="methodButton">
+                    <button class="footer-button" onclick="openMethodModal()">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="10"></circle>
                             <line x1="12" y1="16" x2="12" y2="12"></line>
@@ -461,7 +461,7 @@ async function initDashboard() {
                         </svg>
                         Method
                     </button>
-                    <button class="footer-button" id="downloadButton">
+                    <button class="footer-button" onclick="downloadDataFile()">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                             <polyline points="7 10 12 15 17 10"></polyline>
@@ -496,76 +496,28 @@ async function initDashboard() {
     // Initialize insights with the last data point
     updateInsights(data.length - 1);
     console.log('Insights initialized');
-    
-    // Setup modal event listeners with a small delay to ensure DOM is ready
-    setTimeout(() => {
-        console.log('About to setup modal listeners...');
-        setupModalListeners(data);
-    }, 100);
     console.log('=== DASHBOARD INIT COMPLETED ===');
 }
 
 // ========== MODAL AND DOWNLOAD HANDLERS ==========
-function setupModalListeners(data) {
-    console.log('Setting up modal listeners...');
-    
-    // Use setTimeout to ensure DOM is fully ready
-    setTimeout(() => {
-        // Method modal
-        const methodButton = document.getElementById('methodButton');
-        const methodModal = document.getElementById('methodModal');
-        const closeMethodModal = document.getElementById('closeMethodModal');
-        
-        console.log('Method button:', methodButton);
-        console.log('Method modal:', methodModal);
-        console.log('Close button:', closeMethodModal);
-        
-        if (methodButton) {
-            methodButton.onclick = function() {
-                console.log('Method button clicked!');
-                if (methodModal) {
-                    methodModal.style.display = 'flex';
-                }
-            };
-        } else {
-            console.error('Method button not found');
-        }
-        
-        if (closeMethodModal) {
-            closeMethodModal.onclick = function() {
-                console.log('Close modal clicked!');
-                if (methodModal) {
-                    methodModal.style.display = 'none';
-                }
-            };
-        }
-        
-        if (methodModal) {
-            methodModal.onclick = function(event) {
-                if (event.target === methodModal || event.target.classList.contains('modal-backdrop')) {
-                    console.log('Backdrop clicked!');
-                    methodModal.style.display = 'none';
-                }
-            };
-        }
-        
-        // Download button - direct JSON download
-        const downloadButton = document.getElementById('downloadButton');
-        console.log('Download button:', downloadButton);
-        
-        if (downloadButton) {
-            downloadButton.onclick = function() {
-                console.log('Download button clicked!');
-                downloadData(data);
-            };
-        } else {
-            console.error('Download button not found');
-        }
-    }, 0);
+function openMethodModal() {
+    console.log('Opening method modal');
+    const modal = document.getElementById('methodModal');
+    if (modal) {
+        modal.style.display = 'flex';
+    }
 }
 
-function downloadData(data) {
-    // Create a link to download the actual file from the server
+function closeMethodModal() {
+    console.log('Closing method modal');
+    const modal = document.getElementById('methodModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+function downloadDataFile() {
+    console.log('Downloading data file');
     const a = document.createElement('a');
     a.href = 'data/ttc_passengers.json';
     a.download = 'tbilisi_transport_data.json';
