@@ -448,9 +448,6 @@ async function initDashboard() {
             <div class="footer-content">
                 Data Source:
                 <a href="https://ttc.com.ge" target="_blank" rel="noopener">Tbilisi Transport Company</a>
-                <span class="footer-divider">|</span>
-                Created by
-                <a href="https://gkankia.xyz" target="_blank" rel="noopener">Giorgi Kankia</a>
             </div>
 
             <div class="footer-logo-wrapper">

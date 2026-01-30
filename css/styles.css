@@ -323,8 +323,8 @@ h3 {
 
 .footer-content {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    align-items: left;
+    justify-content: left;
     gap: 15px;
     flex-wrap: wrap;
     font-size: 10px;
