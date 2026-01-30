@@ -271,7 +271,7 @@ function updateTotalCard(total, change, date) {
         if (change !== null) {
             const changeClass = getChangeClass(change);
             const changeSymbol = getChangeSymbol(change);
-            const holidayBadge = isHoliday(date) ? '' : '';
+            const holidayBadge = isHoliday(date) ? ' 🎉 Public Holiday' : '';
             
             changeElement.className = `insight-change total-change ${changeClass}`;
             changeElement.style.color = changeClass === 'change-positive' ? 'rgba(255,255,255,0.9)' : 
@@ -330,7 +330,7 @@ function createInsights(data) {
     const totalChange = calculateChange(totalLatest, totalPrevious);
 
     const modes = ['bus', 'metro', 'minibus', 'cable'];
-    const modeNames = { bus: 'ავტობუსი', metro: 'მეტრო', minibus: 'მიკროავტობუსი', cable: 'საბაგირო' };
+    const modeNames = { bus: 'Bus', metro: 'Metro', minibus: 'Minibus', cable: 'Cable' };
     
     const cards = modes.map(mode => {
         const change = calculateChange(latest[mode], previous[mode]);
@@ -350,11 +350,11 @@ function createInsights(data) {
 
     return `
         <div class="insight-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; position: relative;">
-            <h3 style="color: rgba(255,255,255,0.9);">მგზავრობების რაოდენობა</h3>
+            <h3 style="color: rgba(255,255,255,0.9);">TOTAL PASSENGERS</h3>
             <div class="insight-value total-value" style="color: white;">${totalLatest.toLocaleString()}</div>
             <div class="insight-change total-change" style="color: rgba(255,255,255,0.9);">
                 ${getChangeSymbol(totalChange)} ${Math.abs(totalChange)}% vs prev. day
-                ${isHoliday(latest.date) ? '' : ''}
+                ${isHoliday(latest.date) ? ' 🎉 Public Holiday' : ''}
             </div>
         </div>
         ${cards}
@@ -446,7 +446,7 @@ async function initDashboard() {
         <div class="footer">
             <div class="footer-top">
                 <div class="last-update">
-                    <span class="last-update-label">ბოლო განახლება:</span>
+                    <span class="last-update-label">Last Update:</span>
                     <span class="last-update-value">${formatDate(data[data.length - 1].date)} • 03:00 AM</span>
                 </div>
                 <div class="footer-actions">
@@ -456,7 +456,7 @@ async function initDashboard() {
                             <line x1="12" y1="16" x2="12" y2="12"></line>
                             <line x1="12" y1="8" x2="12.01" y2="8"></line>
                         </svg>
-                        მეთოდოლოგია
+                        Method
                     </button>
                     <button class="footer-button" id="downloadButton">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -464,7 +464,7 @@ async function initDashboard() {
                             <polyline points="7 10 12 15 17 10"></polyline>
                             <line x1="12" y1="15" x2="12" y2="3"></line>
                         </svg>
-                        მონაცემების გადმოწერა
+                        Download Data
                     </button>
                 </div>
             </div>
@@ -490,56 +490,69 @@ async function initDashboard() {
     // Initialize insights with the last data point
     updateInsights(data.length - 1);
     
-    // Setup modal event listeners
-    setupModalListeners(data);
+    // Setup modal event listeners with a small delay to ensure DOM is ready
+    setTimeout(() => {
+        setupModalListeners(data);
+    }, 100);
 }
 
 // ========== MODAL AND DOWNLOAD HANDLERS ==========
 function setupModalListeners(data) {
     console.log('Setting up modal listeners...');
     
-    // Method modal
-    const methodButton = document.getElementById('methodButton');
-    const methodModal = document.getElementById('methodModal');
-    const closeMethodModal = document.getElementById('closeMethodModal');
-    
-    console.log('Method button:', methodButton);
-    console.log('Method modal:', methodModal);
-    
-    if (methodButton && methodModal && closeMethodModal) {
-        methodButton.addEventListener('click', () => {
-            console.log('Method button clicked!');
-            methodModal.style.display = 'flex';
-        });
+    // Use setTimeout to ensure DOM is fully ready
+    setTimeout(() => {
+        // Method modal
+        const methodButton = document.getElementById('methodButton');
+        const methodModal = document.getElementById('methodModal');
+        const closeMethodModal = document.getElementById('closeMethodModal');
         
-        closeMethodModal.addEventListener('click', () => {
-            console.log('Close modal clicked!');
-            methodModal.style.display = 'none';
-        });
+        console.log('Method button:', methodButton);
+        console.log('Method modal:', methodModal);
+        console.log('Close button:', closeMethodModal);
         
-        // Close modal when clicking on backdrop
-        methodModal.addEventListener('click', (event) => {
-            if (event.target === methodModal || event.target.classList.contains('modal-backdrop')) {
-                console.log('Backdrop clicked!');
-                methodModal.style.display = 'none';
-            }
-        });
-    } else {
-        console.error('Modal elements not found:', { methodButton, methodModal, closeMethodModal });
-    }
-    
-    // Download button - direct JSON download
-    const downloadButton = document.getElementById('downloadButton');
-    console.log('Download button:', downloadButton);
-    
-    if (downloadButton) {
-        downloadButton.addEventListener('click', () => {
-            console.log('Download button clicked!');
-            downloadData(data);
-        });
-    } else {
-        console.error('Download button not found');
-    }
+        if (methodButton) {
+            methodButton.onclick = function() {
+                console.log('Method button clicked!');
+                if (methodModal) {
+                    methodModal.style.display = 'flex';
+                }
+            };
+        } else {
+            console.error('Method button not found');
+        }
+        
+        if (closeMethodModal) {
+            closeMethodModal.onclick = function() {
+                console.log('Close modal clicked!');
+                if (methodModal) {
+                    methodModal.style.display = 'none';
+                }
+            };
+        }
+        
+        if (methodModal) {
+            methodModal.onclick = function(event) {
+                if (event.target === methodModal || event.target.classList.contains('modal-backdrop')) {
+                    console.log('Backdrop clicked!');
+                    methodModal.style.display = 'none';
+                }
+            };
+        }
+        
+        // Download button - direct JSON download
+        const downloadButton = document.getElementById('downloadButton');
+        console.log('Download button:', downloadButton);
+        
+        if (downloadButton) {
+            downloadButton.onclick = function() {
+                console.log('Download button clicked!');
+                downloadData(data);
+            };
+        } else {
+            console.error('Download button not found');
+        }
+    }, 0);
 }
 
 function downloadData(data) {
