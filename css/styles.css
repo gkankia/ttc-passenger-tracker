@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fira+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&family=Noto+Sans+Georgian:wght@100..900&display=swap');
 
 /* ========== RESET ========== */
 * {
@@ -9,7 +9,7 @@
 
 /* ========== BASE STYLES ========== */
 body {
-    font-family: "Fira Mono", monospace;
+    font-family: "Noto Sans Georgian", sans-serif;
     background: #ffffff;
     min-height: 100vh;
     padding: 20px;
@@ -302,7 +302,7 @@ h3 {
     background: white;
     border: 1px solid #d1d5db;
     border-radius: 6px;
-    font-family: "Fira Mono", monospace;
+    font-family: "Noto Sans Georgian", sans-serif;
     font-size: 0.8rem;
     color: #333;
     cursor: pointer;
