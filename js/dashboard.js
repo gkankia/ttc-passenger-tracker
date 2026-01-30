@@ -379,7 +379,9 @@ function initTransitMap() {
 
 // ========== DASHBOARD INITIALIZATION ==========
 async function initDashboard() {
+    console.log('=== DASHBOARD INIT STARTED ===');
     const data = await loadData();
+    console.log('Data loaded:', data.length, 'records');
     
     if (data.length === 0) {
         document.getElementById('dashboard').innerHTML = '<p class="loading">No data available</p>';
@@ -388,6 +390,7 @@ async function initDashboard() {
 
     data.sort((a, b) => parseDate(a.date) - parseDate(b.date));
     globalData = data; // Store globally for hover updates
+    console.log('Global data set, length:', globalData.length);
 
     const html = `
         <div class="main-content">
@@ -484,16 +487,22 @@ async function initDashboard() {
     `;
 
     document.getElementById('dashboard').innerHTML = html;
+    console.log('HTML set in dashboard');
     createChart(data);
+    console.log('Chart created');
     initTransitMap();
+    console.log('Map initialized');
     
     // Initialize insights with the last data point
     updateInsights(data.length - 1);
+    console.log('Insights initialized');
     
     // Setup modal event listeners with a small delay to ensure DOM is ready
     setTimeout(() => {
+        console.log('About to setup modal listeners...');
         setupModalListeners(data);
     }, 100);
+    console.log('=== DASHBOARD INIT COMPLETED ===');
 }
 
 // ========== MODAL AND DOWNLOAD HANDLERS ==========
@@ -556,20 +565,13 @@ function setupModalListeners(data) {
 }
 
 function downloadData(data) {
-    const content = JSON.stringify(data, null, 2);
-    const filename = 'tbilisi_transport_data.json';
-    const mimeType = 'application/json';
-    
-    // Create download link
-    const blob = new Blob([content], { type: mimeType });
-    const url = URL.createObjectURL(blob);
+    // Create a link to download the actual file from the server
     const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
+    a.href = 'data/ttc_passengers.json';
+    a.download = 'tbilisi_transport_data.json';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    URL.revokeObjectURL(url);
 }
 
 // ========== START APPLICATION ==========
