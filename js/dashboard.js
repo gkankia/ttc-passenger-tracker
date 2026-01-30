@@ -136,7 +136,7 @@ function createChart(data) {
 
     const datasets = [
         {
-            label: 'ავტობუსი',
+            label: 'Bus',
             data: data.map(d => d.bus),
             borderColor: '#3b82f6',
             backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -146,7 +146,7 @@ function createChart(data) {
             tension: 0.4
         },
         {
-            label: 'მეტრო',
+            label: 'Metro',
             data: data.map(d => d.metro),
             borderColor: '#10b981',
             backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -156,7 +156,7 @@ function createChart(data) {
             tension: 0.4
         },
         {
-            label: 'მიკროავტობუსი',
+            label: 'Minibus',
             data: data.map(d => d.minibus),
             borderColor: '#f59e0b',
             backgroundColor: 'rgba(245, 158, 11, 0.1)',
@@ -166,7 +166,7 @@ function createChart(data) {
             tension: 0.4
         },
         {
-            label: 'საბაგირო',
+            label: 'Cable',
             data: data.map(d => d.cable),
             borderColor: '#8b5cf6',
             backgroundColor: 'rgba(139, 92, 246, 0.1)',
@@ -330,7 +330,7 @@ function createInsights(data) {
     const totalChange = calculateChange(totalLatest, totalPrevious);
 
     const modes = ['bus', 'metro', 'minibus', 'cable'];
-    const modeNames = { bus: 'Bus', metro: 'Metro', minibus: 'Minibus', cable: 'Cable' };
+    const modeNames = { bus: 'ავტობუსი', metro: 'მეტრო', minibus: 'მიკროავტობუსი', cable: 'საბაგირო' };
     
     const cards = modes.map(mode => {
         const change = calculateChange(latest[mode], previous[mode]);
