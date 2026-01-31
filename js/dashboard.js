@@ -299,7 +299,7 @@ function updateModeCard(mode, value, change) {
             changeElement.className = `insight-change ${mode}-change ${changeClass}`;
             changeElement.style.color = changeClass === 'change-positive' ? '#10b981' : 
                                         changeClass === 'change-negative' ? '#ef4444' : '#6b7280';
-            changeElement.innerHTML = `${changeSymbol} ${Math.abs(change)}% vs prev. day`;
+            changeElement.innerHTML = `${changeSymbol} ${Math.abs(change)}% vs წინა დღე`;
             console.log(`Updated ${mode} change to: ${change}%`);
         } else {
             changeElement.className = `insight-change ${mode}-change`;
@@ -336,7 +336,7 @@ function createInsights(data) {
                 <h3>${modeNames[mode]}</h3>
                 <div class="insight-value ${mode}-value">${(latest[mode] || 0).toLocaleString()}</div>
                 <div class="insight-change ${mode}-change ${changeClass}" style="color: ${changeClass === 'change-positive' ? '#10b981' : changeClass === 'change-negative' ? '#ef4444' : '#6b7280'};">
-                    ${changeSymbol} ${Math.abs(change)}% vs prev. day
+                    ${changeSymbol} ${Math.abs(change)}% vs წინა დღე
                 </div>
             </div>
         `;
@@ -347,7 +347,7 @@ function createInsights(data) {
             <h3 style="color: rgba(255,255,255,0.9);">სულ მგზავრობა</h3>
             <div class="insight-value total-value" style="color: white;">${totalLatest.toLocaleString()}</div>
             <div class="insight-change total-change" style="color: rgba(255,255,255,0.9);">
-                ${getChangeSymbol(totalChange)} ${Math.abs(totalChange)}% vs prev. day
+                ${getChangeSymbol(totalChange)} ${Math.abs(totalChange)}% vs წინა დღე
                 ${isHoliday(latest.date) ? ' 🎉 Public Holiday' : ''}
             </div>
         </div>
