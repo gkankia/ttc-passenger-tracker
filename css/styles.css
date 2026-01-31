@@ -13,7 +13,6 @@ body {
     font-family: "Fira Mono", monospace;
     background: #ffffff;
     min-height: 100vh;
-    font-weight: 300;
     padding: 20px;
     color: #333;
 }
@@ -121,6 +120,7 @@ h3 {
 .insight-card h3 {
     font-size: 0.75rem;
     font-family: "BPG Nino Elite Caps", sans-serif;
+    font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 1px;
     color: #666;
@@ -129,7 +129,7 @@ h3 {
 
 .insight-value {
     font-size: 1.5rem;
-    font-weight: bold;
+    font-weight: 300;
     color: #333;
     margin-bottom: 5px;
 }
