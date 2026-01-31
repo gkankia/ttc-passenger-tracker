@@ -324,7 +324,7 @@ function createInsights(data) {
     const totalChange = calculateChange(totalLatest, totalPrevious);
 
     const modes = ['bus', 'metro', 'minibus', 'cable'];
-    const modeNames = { bus: 'Bus', metro: 'Metro', minibus: 'Minibus', cable: 'Cable' };
+    const modeNames = { bus: 'ავტობუსი', metro: 'მეტრო', minibus: 'მიკროავტობუსი', cable: 'საბაგირო' };
     
     const cards = modes.map(mode => {
         const change = calculateChange(latest[mode], previous[mode]);
