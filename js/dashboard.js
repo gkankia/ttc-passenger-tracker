@@ -429,10 +429,7 @@ async function initDashboard() {
                 <div class="last-update">
                     <span class="last-update-label">ბოლო განახლება:</span>
                     <span class="last-update-value">${formatDate(data[data.length - 1].date)}</span>
-                </div>
-                <div class="footer-content">
-                    მონაცემები:
-                    <a href="https://ttc.com.ge" target="_blank" rel="noopener">თბილისის სატრანსპორტო კომპანია</a>
+                    <span class="last-update-label">მონაცემების ციტირება:</span>
                 </div>
                 <div class="footer-actions">
                     <button class="footer-button" onclick="openMethodModal()">
