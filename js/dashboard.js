@@ -428,7 +428,7 @@ async function initDashboard() {
             <div class="footer-top">
                 <div class="last-update">
                     <span class="last-update-label">ბოლო განახლება:</span>
-                    <span class="last-update-value">${formatDate(data[data.length - 1].date)} • 03:00 AM</span>
+                    <span class="last-update-value">${formatDate(data[data.length - 1].date)}</span>
                 </div>
                 <div class="footer-actions">
                     <button class="footer-button" onclick="openMethodModal()">
@@ -453,6 +453,7 @@ async function initDashboard() {
             <div class="footer-logo-wrapper">
                 <img src="img/black-logo.png" alt="Logo" class="footer-logo-img">
             </div>
+            <span>© 2026 - Z.axis</span>
         </div>
     `;
 
