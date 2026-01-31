@@ -412,14 +412,14 @@ async function initDashboard() {
             <div class="modal-backdrop"></div>
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3>Methodology</h3>
+                    <h3>მეთოდოლოგია</h3>
                     <button class="modal-close" onclick="closeMethodModal()">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <p><strong>Data Source:</strong> Daily passenger counts are scraped from the Tbilisi Transport Company (TTC) official website at 3:00 AM local time.</p>
-                    <p><strong>Coverage:</strong> The data includes all four public transport modes in Tbilisi: buses, metro, minibuses (marshrutkas), and cable cars.</p>
-                    <p><strong>Update Frequency:</strong> Data is updated once daily, capturing the previous day's ridership totals.</p>
-                    <p><strong>Georgian Public Holidays:</strong> Official public holidays are marked on the chart and may show different ridership patterns.</p>
+                    <p><strong>მონაცემთა წყარო:</strong> მგზავრობის ყოველდღიური მონაცემები ეყრდნობა თბილისის სატრანსპორტო კომპანიის ოფიციალურ ინფორმაციას.</p>
+                    <p><strong>მახასიათებლები:</strong> მონაცემები ფარავს საზოგადოებრივი ტრანსპორტის ოთხ სახეობას: ავტობუსს, მეტროს, მიკროავტობუსსა და საბაგიროს. 
+                    პლატფორმაზე მოცემული ბოლო მონაცემი წინა დღის მაჩვენებელია.</p>
+                    <p><strong>დასვენების დღეები:</strong> მგზავრობის დინამიკის უკეთ სანახავად, შაბათ-კვირა და უქმე დღეები მოცემულია შებამის ფერებში.</p>
                 </div>
             </div>
         </div>
