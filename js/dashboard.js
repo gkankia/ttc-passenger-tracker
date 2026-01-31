@@ -270,7 +270,7 @@ function updateTotalCard(total, change, date) {
             changeElement.className = `insight-change total-change ${changeClass}`;
             changeElement.style.color = changeClass === 'change-positive' ? 'rgba(255,255,255,0.9)' : 
                                         changeClass === 'change-negative' ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.9)';
-            changeElement.innerHTML = `${changeSymbol} ${Math.abs(change)}% vs prev. day${holidayBadge}`;
+            changeElement.innerHTML = `${changeSymbol} ${Math.abs(change)}% vs წინა დღე${holidayBadge}`;
         } else {
             // First day - hide or show placeholder
             changeElement.className = 'insight-change total-change';
