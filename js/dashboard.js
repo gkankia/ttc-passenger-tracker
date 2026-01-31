@@ -416,7 +416,7 @@ async function initDashboard() {
                     <button class="modal-close" onclick="closeMethodModal()">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <p><strong>მონაცემთა წყარო:</strong> მგზავრობის ყოველდღიური მონაცემები ეყრდნობა თბილისის სატრანსპორტო კომპანიის ოფიციალურ ინფორმაციას.</p>
+                    <p><strong>მონაცემთა წყარო:</strong> მგზავრობის ყოველდღიური მონაცემები ეყრდნობა <a href="https://ttc.com.ge" target="_blank" rel="noopener">თბილისის სატრანსპორტო კომპანიის</a> ოფიციალურ ინფორმაციას.</p>
                     <p><strong>მახასიათებლები:</strong> მონაცემები ფარავს საზოგადოებრივი ტრანსპორტის ოთხ სახეობას: ავტობუსს, მეტროს, მიკროავტობუსსა და საბაგიროს. 
                     პლატფორმაზე მოცემული ბოლო მონაცემი წინა დღის მაჩვენებელია.</p>
                     <p><strong>დასვენების დღეები:</strong> მგზავრობის დინამიკის უკეთ სანახავად, შაბათ-კვირა და უქმე დღეები მოცემულია შებამის ფერებში.</p>
@@ -445,10 +445,10 @@ async function initDashboard() {
                 </div>
             </div>
             
-            <div class="footer-content">
+            <!--<div class="footer-content">
                 მონაცემები:
                 <a href="https://ttc.com.ge" target="_blank" rel="noopener">თბილისის სატრანსპორტო კომპანია</a>
-            </div>
+            </div>-->
 
             <div class="footer-logo-wrapper">
                 <a href="https://zaxis.ge" target="_blank" rel="noopener">
