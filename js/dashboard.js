@@ -428,7 +428,7 @@ async function initDashboard() {
             <div class="footer-top">
                 <div class="last-update">
                     <span class="last-update-label">ბოლო განახლება:</span>
-                    <span class="last-update-value">${formatDate(data[data.length - 1].date)}</span>
+                    <span class="last-update-value">${formatDate(data[data.length - 1].date)} 2026</span>
                 </div>
                 <div class="footer-actions">
                     <button class="footer-button" onclick="openMethodModal()">
