@@ -453,7 +453,7 @@ async function initDashboard() {
             <div class="footer-logo-wrapper">
                 <a href="https://zaxis.ge" target="_blank" rel="noopener">
                     <img src="img/black-logo.png" alt="Logo" class="footer-logo-img">
-                </a>
+                </a><br>
                 <span style="font-size: 12px">© 2026</span>
             </div>
         </div>
