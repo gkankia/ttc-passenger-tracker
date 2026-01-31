@@ -344,7 +344,7 @@ function createInsights(data) {
 
     return `
         <div class="insight-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; position: relative;">
-            <h3 style="font-family: "BPG Nino Elite Caps", sans-serif; color: rgba(255,255,255,0.9);">სულ მგზავრობა</h3>
+            <h3 style="font-family: 'BPG Nino Elite Caps', sans-serif; color: rgba(255,255,255,0.9);">სულ მგზავრობა</h3>
             <div class="insight-value total-value" style="color: white;">${totalLatest.toLocaleString()}</div>
             <div class="insight-change total-change" style="color: rgba(255,255,255,0.9);">
                 ${getChangeSymbol(totalChange)} ${Math.abs(totalChange)}% vs prev. day
