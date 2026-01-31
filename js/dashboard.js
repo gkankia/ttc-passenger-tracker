@@ -376,27 +376,27 @@ async function initDashboard() {
                 <div class="chart-legend">
                     <div class="chart-legend-item">
                         <div class="chart-legend-color" style="background: #3b82f6;"></div>
-                        <span>Bus</span>
+                        <span>ავტობუსი</span>
                     </div>
                     <div class="chart-legend-item">
                         <div class="chart-legend-color" style="background: #10b981;"></div>
-                        <span>Metro</span>
+                        <span>მეტრო</span>
                     </div>
                     <div class="chart-legend-item">
                         <div class="chart-legend-color" style="background: #f59e0b;"></div>
-                        <span>Minibus</span>
+                        <span>მიკროავტობუსი</span>
                     </div>
                     <div class="chart-legend-item">
                         <div class="chart-legend-color" style="background: #8b5cf6;"></div>
-                        <span>Cable</span>
+                        <span>საბაგირო</span>
                     </div>
                     <div class="chart-legend-item" style="margin-left: 10px;">
                         <div class="chart-legend-color" style="background: rgba(0, 0, 0, 0.1);"></div>
-                        <span>Weekend</span>
+                        <span>შაბ-კვ.</span>
                     </div>
                     <div class="chart-legend-item">
                         <div class="chart-legend-color" style="background: rgba(102, 126, 234, 0.2);"></div>
-                        <span>Holiday</span>
+                        <span>უქმე დღე</span>
                     </div>
                 </div>
                 <canvas id="passengerChart"></canvas>
