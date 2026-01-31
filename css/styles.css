@@ -164,6 +164,7 @@ h3 {
     height: 100%;
     align-items: center;
     justify-content: center;
+    font-family: "BPG Nino Elite Caps", sans-serif;
 }
 
 .modal-backdrop {
@@ -255,6 +256,15 @@ h3 {
 
 .modal-body strong {
     color: #333;
+}
+
+.modal a {
+    color: #667eea;
+    text-decoration: none;
+}
+
+.modal a:hover {
+    text-decoration: underline;
 }
 
 /* ========== FOOTER ========== */
