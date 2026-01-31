@@ -1,4 +1,10 @@
-
+// ========== CONFIGURATION ==========
+const CONFIG = {
+    MAPBOX_TOKEN: 'pk.eyJ1Ijoiam9yam9uZTkwIiwiYSI6ImNrZ3R6M2FvdTBwbmwycXBibGRqM2w2enYifQ.BxjvFSGqefuC9yFCrXC-nQ',
+    MAPBOX_STYLE: 'mapbox://styles/jorjone90/clplq461o00wy01o93mm76il6',
+    MAP_CENTER: [44.8271, 41.7151],
+    MAP_ZOOM: 12
+};
 
 // Georgian public holidays 2026
 const GEORGIAN_HOLIDAYS = [
@@ -186,7 +192,7 @@ function createChart(data) {
                     display: false
                 },
                 tooltip: {
-                    enabled: false // Disable tooltip
+                    enabled: false
                 },
                 weekendHolidayHighlight: {
                     dates: dates
@@ -220,28 +226,22 @@ function createChart(data) {
         plugins: [weekendHolidayHighlightPlugin]
     });
 
-    // Set canvas cursor to pointer
     ctx.canvas.style.cursor = 'pointer';
 }
 
 // ========== UPDATE INSIGHTS ON HOVER ==========
 function updateInsights(index) {
-    console.log('updateInsights called with index:', index);
     if (index < 0 || index >= globalData.length) return;
 
     const current = globalData[index];
     const previous = index > 0 ? globalData[index - 1] : null;
-    
-    console.log('Current date:', current.date, 'Current bus:', current.bus);
 
-    // Update total
     const totalCurrent = (current.bus || 0) + (current.metro || 0) + (current.minibus || 0) + (current.cable || 0);
     const totalPrevious = previous ? ((previous.bus || 0) + (previous.metro || 0) + (previous.minibus || 0) + (previous.cable || 0)) : 0;
     const totalChange = previous ? calculateChange(totalCurrent, totalPrevious) : null;
 
     updateTotalCard(totalCurrent, totalChange, current.date);
 
-    // Update mode cards
     const modes = ['bus', 'metro', 'minibus', 'cable'];
     modes.forEach(mode => {
         const currentValue = current[mode] || 0;
@@ -265,14 +265,11 @@ function updateTotalCard(total, change, date) {
         if (change !== null) {
             const changeClass = getChangeClass(change);
             const changeSymbol = getChangeSymbol(change);
-            const holidayBadge = isHoliday(date) ? '' : '';
             
             changeElement.className = `insight-change total-change ${changeClass}`;
-            changeElement.style.color = changeClass === 'change-positive' ? 'rgba(255,255,255,0.9)' : 
-                                        changeClass === 'change-negative' ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.9)';
-            changeElement.innerHTML = `${changeSymbol} ${Math.abs(change)}% vs წინა დღე${holidayBadge}`;
+            changeElement.style.color = 'rgba(255,255,255,0.9)';
+            changeElement.innerHTML = `${changeSymbol} ${Math.abs(change)}% vs წინა დღე`;
         } else {
-            // First day - hide or show placeholder
             changeElement.className = 'insight-change total-change';
             changeElement.style.color = 'rgba(255,255,255,0.9)';
             changeElement.innerHTML = '—';
@@ -283,8 +280,6 @@ function updateTotalCard(total, change, date) {
 function updateModeCard(mode, value, change) {
     const valueElement = document.querySelector(`.${mode}-value`);
     const changeElement = document.querySelector(`.${mode}-change`);
-
-    console.log(`updateModeCard for ${mode}:`, { value, change, valueElement, changeElement });
 
     if (valueElement) {
         const oldValue = parseInt(valueElement.textContent.replace(/,/g, '')) || 0;
@@ -300,12 +295,10 @@ function updateModeCard(mode, value, change) {
             changeElement.style.color = changeClass === 'change-positive' ? '#10b981' : 
                                         changeClass === 'change-negative' ? '#ef4444' : '#6b7280';
             changeElement.innerHTML = `${changeSymbol} ${Math.abs(change)}% vs წინა დღე`;
-            console.log(`Updated ${mode} change to: ${change}%`);
         } else {
             changeElement.className = `insight-change ${mode}-change`;
             changeElement.style.color = '#6b7280';
             changeElement.innerHTML = '—';
-            console.log(`${mode} change is null (first day)`);
         }
     }
 }
@@ -348,18 +341,29 @@ function createInsights(data) {
             <div class="insight-value total-value" style="color: white;">${totalLatest.toLocaleString()}</div>
             <div class="insight-change total-change" style="color: rgba(255,255,255,0.9);">
                 ${getChangeSymbol(totalChange)} ${Math.abs(totalChange)}% vs წინა დღე
-                ${isHoliday(latest.date) ? ' 🎉 Public Holiday' : ''}
             </div>
         </div>
         ${cards}
     `;
 }
 
+// ========== MAP INITIALIZATION ==========
+let map;
+
+function initTransitMap() {
+    mapboxgl.accessToken = CONFIG.MAPBOX_TOKEN;
+    
+    map = new mapboxgl.Map({
+        container: 'transit-map',
+        style: CONFIG.MAPBOX_STYLE,
+        center: CONFIG.MAP_CENTER,
+        zoom: CONFIG.MAP_ZOOM
+    });
+}
+
 // ========== DASHBOARD INITIALIZATION ==========
 async function initDashboard() {
-    console.log('=== DASHBOARD INIT STARTED ===');
     const data = await loadData();
-    console.log('Data loaded:', data.length, 'records');
     
     if (data.length === 0) {
         document.getElementById('dashboard').innerHTML = '<p class="loading">No data available</p>';
@@ -367,8 +371,7 @@ async function initDashboard() {
     }
 
     data.sort((a, b) => parseDate(a.date) - parseDate(b.date));
-    globalData = data; // Store globally for hover updates
-    console.log('Global data set, length:', globalData.length);
+    globalData = data;
 
     const html = `
         <div class="main-content">
@@ -417,10 +420,10 @@ async function initDashboard() {
                 </div>
                 <div class="modal-body">
                     <p><strong>მონაცემთა წყარო:</strong> მგზავრობის ყოველდღიური მონაცემები ეყრდნობა <a href="https://ttc.com.ge" target="_blank" rel="noopener">თბილისის სატრანსპორტო კომპანიის</a> ოფიციალურ ინფორმაციას.</p>
-                    <p><strong>მახასიათებლები:</strong> მონაცემები ფარავს საზოგადოებრივი ტრანსპორტის ოთხ სახეობას: ავტობუსს, მეტროს, მიკროავტობუსსა და საბაგიროს. 
-                    პლატფორმაზე მოცემული ბოლო მონაცემი წინა დღის მაჩვენებელია.</p>
+                    <p><strong>მახასიათებლები:</strong> მონაცემები ფარავს საზოგადოებრივი ტრანსპორტის ოთხ სახეობას - ავტობუსს, მეტროს, მიკროავტობუსსა და საბაგიროს. 
+                    პლატფორმაზე მოცემული უახლესი მონაცემი წინა დღის მაჩვენებელია.</p>
                     <p><strong>დასვენების დღეები:</strong> მგზავრობის დინამიკის უკეთ სანახავად, შაბათ-კვირა და უქმე დღეები მოცემულია შესაბამის ფერებში.</p>
-                    <p><strong>ციტირება:</strong> მონაცემების გადმოწერის და გამოყენების შემთხვევაში, გთხოვთ, წყარო მიუთითოთ შესაბამის ფორმატში - თბილისის სატრანსპორტო კომპანიის მონაცემები, Z.axis (2026).</p>
+                    <p><strong>ციტირება:</strong> მონაცემების გადმოწერის და გამოყენების შემთხვევაში, გთხოვთ, წყარო მიუთითოთ შესაბამის ფორმატში - <i>თბილისის სატრანსპორტო კომპანიის მონაცემები, Z.axis (2026).</i></p>
                 </div>
             </div>
         </div>
@@ -446,36 +449,45 @@ async function initDashboard() {
                 </div>
             </div>
             
-            <!--<div class="footer-content">
-                მონაცემები:
-                <a href="https://ttc.com.ge" target="_blank" rel="noopener">თბილისის სატრანსპორტო კომპანია</a>
-            </div>-->
-
-            <div class="footer-logo-wrapper">
-                <a href="https://zaxis.ge" target="_blank" rel="noopener">
-                    <img src="img/black-logo.png" alt="Logo" class="footer-logo-img">
-                </a>
+            <div class="footer-bottom">
+                <div class="footer-logo-wrapper">
+                    <a href="https://zaxis.ge" target="_blank" rel="noopener">
+                        <img src="img/black-logo.png" alt="Logo" class="footer-logo-img">
+                    </a>
+                </div>
+                
+                <div class="social-share">
+                    <span class="share-label">გაზიარება:</span>
+                    <button class="share-button facebook" onclick="shareOnFacebook()" title="გაზიარება Facebook-ზე">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                        </svg>
+                    </button>
+                    <button class="share-button linkedin" onclick="shareOnLinkedIn()" title="გაზიარება LinkedIn-ზე">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                        </svg>
+                    </button>
+                    <button class="share-button email" onclick="shareViaEmail()" title="გაზიარება ელფოსტით">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                    </button>
+                </div>
             </div>
             <span style="font-size: 12px">© 2026</span>
         </div>
     `;
 
     document.getElementById('dashboard').innerHTML = html;
-    console.log('HTML set in dashboard');
     createChart(data);
-    console.log('Chart created');
     initTransitMap();
-    console.log('Map initialized');
-    
-    // Initialize insights with the last data point
     updateInsights(data.length - 1);
-    console.log('Insights initialized');
-    console.log('=== DASHBOARD INIT COMPLETED ===');
 }
 
 // ========== MODAL AND DOWNLOAD HANDLERS ==========
 function openMethodModal() {
-    console.log('Opening method modal');
     const modal = document.getElementById('methodModal');
     if (modal) {
         modal.style.display = 'flex';
@@ -483,7 +495,6 @@ function openMethodModal() {
 }
 
 function closeMethodModal() {
-    console.log('Closing method modal');
     const modal = document.getElementById('methodModal');
     if (modal) {
         modal.style.display = 'none';
@@ -491,7 +502,6 @@ function closeMethodModal() {
 }
 
 function downloadDataFile() {
-    console.log('Downloading data file');
     const a = document.createElement('a');
     a.href = 'data/ttc_passengers.json';
     a.download = 'tbilisi_transport_data.json';
@@ -509,14 +519,13 @@ function shareOnFacebook() {
 
 function shareOnLinkedIn() {
     const url = encodeURIComponent(window.location.href);
-    const title = encodeURIComponent('Public Transport in Tbilisi - Daily Passenger Statistics');
     const shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
     window.open(shareUrl, '_blank', 'width=600,height=400');
 }
 
 function shareViaEmail() {
-    const subject = encodeURIComponent('Public Transport in Tbilisi - Daily Passenger Statistics');
-    const body = encodeURIComponent(`Check out this dashboard tracking daily passenger statistics for public transport in Tbilisi:\n\n${window.location.href}`);
+    const subject = encodeURIComponent('საზოგადოებრივი ტრანსპორტი თბილისში');
+    const body = encodeURIComponent(`ნახეთ ეს ინტერაქტიული დაშბორდი, რომელიც აჩვენებს თბილისის საზოგადოებრივი ტრანსპორტის ყოველდღიურ სტატისტიკას:\n\n${window.location.href}`);
     window.location.href = `mailto:?subject=${subject}&body=${body}`;
 }
 
