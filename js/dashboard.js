@@ -446,7 +446,7 @@ async function initDashboard() {
             </div>
             
             <div class="footer-content">
-                Data Source:
+                მონაცემები:
                 <a href="https://ttc.com.ge" target="_blank" rel="noopener">Tbilisi Transport Company</a>
             </div>
 

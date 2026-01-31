@@ -329,7 +329,8 @@ h3 {
     text-align: left;
     gap: 15px;
     flex-wrap: wrap;
-    font-size: 10px;
+    font-size: 12px;
+    font-family: "BPG Nino Elite Caps", sans-serif;
 }
 
 .footer-logo-wrapper {
