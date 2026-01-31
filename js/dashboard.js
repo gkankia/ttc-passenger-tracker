@@ -500,5 +500,25 @@ function downloadDataFile() {
     document.body.removeChild(a);
 }
 
+// ========== SOCIAL SHARE FUNCTIONS ==========
+function shareOnFacebook() {
+    const url = encodeURIComponent(window.location.href);
+    const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+    window.open(shareUrl, '_blank', 'width=600,height=400');
+}
+
+function shareOnLinkedIn() {
+    const url = encodeURIComponent(window.location.href);
+    const title = encodeURIComponent('Public Transport in Tbilisi - Daily Passenger Statistics');
+    const shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
+    window.open(shareUrl, '_blank', 'width=600,height=400');
+}
+
+function shareViaEmail() {
+    const subject = encodeURIComponent('Public Transport in Tbilisi - Daily Passenger Statistics');
+    const body = encodeURIComponent(`Check out this dashboard tracking daily passenger statistics for public transport in Tbilisi:\n\n${window.location.href}`);
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+}
+
 // ========== START APPLICATION ==========
 initDashboard();

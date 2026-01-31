@@ -369,6 +369,64 @@ h3 {
     color: #d1d5db;
 }
 
+/* ========== SOCIAL SHARE ========== */
+
+
+.social-share {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.share-label {
+    font-size: 0.85rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.share-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.share-button.facebook {
+    color: #1877f2;
+}
+
+.share-button.facebook:hover {
+    background: #1877f2;
+    color: white;
+    border-color: #1877f2;
+}
+
+.share-button.linkedin {
+    color: #0a66c2;
+}
+
+.share-button.linkedin:hover {
+    background: #0a66c2;
+    color: white;
+    border-color: #0a66c2;
+}
+
+.share-button.email {
+    color: #666;
+}
+
+.share-button.email:hover {
+    background: #666;
+    color: white;
+    border-color: #666;
+}
+
 /* ========== UTILITY ========== */
 .legend {
     display: none;
