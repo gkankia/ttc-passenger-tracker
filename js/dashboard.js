@@ -474,7 +474,7 @@ async function initDashboard() {
                     </a>
                 </div>
             </div>
-            <span style="font-size: 12px">© 2026</span>
+            <span style="font-size: 10px">© 2026</span>
         </div>
     `;
 
