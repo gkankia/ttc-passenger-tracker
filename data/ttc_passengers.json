@@ -254,5 +254,21 @@
     "metro": 443129,
     "minibus": 205008,
     "cable": 4471
+  },
+  {
+    "date": "17.02.2026",
+    "weekday": "Tuesday",
+    "bus": 534696,
+    "metro": 435140,
+    "minibus": 203838,
+    "cable": 3575
+  },
+  {
+    "date": "18.02.2026",
+    "weekday": "Wednesday",
+    "bus": 539039,
+    "metro": 442758,
+    "minibus": 206910,
+    "cable": 5031
   }
 ]
