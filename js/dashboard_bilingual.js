@@ -49,7 +49,9 @@ const translations = {
         modalHolidays: 'დასვენების დღეები:',
         modalHolidaysText: 'მგზავრობის დინამიკის უკეთ სანახავად, შაბათ-კვირა და უქმე დღეები მოცემულია შესაბამის ფერებში.',
         modalCitation: 'ციტირება:',
-        modalCitationText: 'მონაცემების გადმოწერის და გამოყენების შემთხვევაში, გთხოვთ, წყარო მიუთითოთ შესაბამის ფორმატში - თბილისის სატრანსპორტო კომპანიის მონაცემები, Z.axis (2026).'
+        modalCitationText: 'მონაცემების გადმოწერის და გამოყენების შემთხვევაში, გთხოვთ, წყარო მიუთითოთ შესაბამის ფორმატში - თბილისის სატრანსპორტო კომპანიის მონაცემები, Z.axis (2026).',
+        emailSubject: 'საზოგადოებრივი ტრანსპორტი თბილისში',
+        emailBody: 'ნახეთ ეს ინტერაქტიული დაშბორდი, რომელიც აჩვენებს თბილისის საზოგადოებრივი ტრანსპორტის ყოველდღიურ სტატისტიკას:'
     },
     en: {
         header: 'Public Transport in Tbilisi',
@@ -80,7 +82,9 @@ const translations = {
         modalHolidays: 'Holidays:',
         modalHolidaysText: 'For better visibility of ridership dynamics, weekends and public holidays are highlighted with corresponding colors.',
         modalCitation: 'Citation:',
-        modalCitationText: 'When downloading and using the data, please cite the source in the appropriate format - Tbilisi Transport Company data, Z.axis (2026).'
+        modalCitationText: 'When downloading and using the data, please cite the source in the appropriate format - Tbilisi Transport Company data, Z.axis (2026).',
+        emailSubject: 'Public Transport in Tbilisi',
+        emailBody: 'Check out this interactive dashboard showing daily public transport statistics in Tbilisi:'
     }
 };
 
@@ -612,8 +616,8 @@ function shareOnLinkedIn() {
 }
 
 function shareViaEmail() {
-    const subject = encodeURIComponent('საზოგადოებრივი ტრანსპორტი თბილისში');
-    const body = encodeURIComponent(`ნახეთ ეს ინტერაქტიული დაშბორდი, რომელიც აჩვენებს თბილისის საზოგადოებრივი ტრანსპორტის ყოველდღიურ სტატისტიკას:\n\n${window.location.href}`);
+    const subject = encodeURIComponent(t('emailSubject'));
+    const body = encodeURIComponent(`${t('emailBody')}\n\n${window.location.href}`);
     window.location.href = `mailto:?subject=${subject}&body=${body}`;
 }
 
