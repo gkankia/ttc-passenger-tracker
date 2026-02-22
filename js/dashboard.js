@@ -535,15 +535,6 @@ async function initDashboard() {
                         <b>${t('downloadData')}</b>
                     </button>
                 </div>
-            </div>
-            
-            <div class="footer-bottom">
-                <div class="footer-logo-wrapper">
-                    <a href="https://zaxis.ge" target="_blank" rel="noopener">
-                        <img src="img/black-logo.png" alt="Logo" class="footer-logo-img">
-                    </a>
-                </div>
-                
                 <div class="social-share">
                     <span class="share-label">${t('share')}</span>
                     <button class="share-button facebook" onclick="shareOnFacebook()" title="${t('shareFacebook')}">
@@ -562,6 +553,14 @@ async function initDashboard() {
                             <polyline points="22,6 12,13 2,6"></polyline>
                         </svg>
                     </button>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="footer-logo-wrapper">
+                    <a href="https://zaxis.ge" target="_blank" rel="noopener">
+                        <img src="img/black-logo.png" alt="Logo" class="footer-logo-img">
+                    </a>
                 </div>
             </div>
             <span style="font-size: 12px">© 2026</span>
