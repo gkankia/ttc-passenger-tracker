@@ -614,5 +614,13 @@
     "metro": 444336,
     "minibus": 199377,
     "cable": 2820
+  },
+  {
+    "date": "03.04.2026",
+    "weekday": "Friday",
+    "bus": 532991,
+    "metro": 444336,
+    "minibus": 199377,
+    "cable": 2820
   }
 ]
