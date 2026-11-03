@@ -2286,5 +2286,13 @@
     "metro": 324566,
     "minibus": 147334,
     "cable": 8237
+  },
+  {
+    "date": "02.11.2026",
+    "weekday": "Monday",
+    "bus": 617926,
+    "metro": 529142,
+    "minibus": 216801,
+    "cable": 6130
   }
 ]
